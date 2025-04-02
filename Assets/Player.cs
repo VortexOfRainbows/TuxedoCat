@@ -1,3 +1,4 @@
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -37,34 +38,44 @@ public class Player : MonoBehaviour
     public static Control Control { get; private set; } = new Control();
     public static Control PrevControl { get; private set; } = new Control();
     public Rigidbody2D RB;
+    public bool TouchingGround = false;
     public void Start()
     {
         
     }
     public void Update()
     {
-        Control.ControlUpdate();
+
     }
     public void FixedUpdate()
     {
+        PrevControl.CopyFrom(Control);
+        Control.ControlUpdate();
+
         Vector2 velo = RB.velocity;
 
-        Vector2 moveDir = Vector2.zero;
+        Vector2 targetVelocity = Vector2.zero;
         if (Control.Left)
-            moveDir.x -= 2;
+            targetVelocity.x -= 5;
         if (Control.Right)
-            moveDir.x += 2;
-        Debug.Log(moveDir);
+            targetVelocity.x += 5;
 
-        velo.x = moveDir.x;
+        velo.x = Mathf.Lerp(velo.x, targetVelocity.x, 0.08f);
 
-        if(Control.Up)
+        if(Control.Up && TouchingGround)
         {
-
+            velo.y += 5;
+            TouchingGround = true;
         }
 
         RB.velocity = velo;
-
-        PrevControl.CopyFrom(Control);
+        TouchingGround = false;
+    }
+    public void OnTriggerStay2D(Collider2D collision)
+    {
+        if(collision.CompareTag("World"))
+        {
+            TouchingGround = true;
+        }
     }
 }
