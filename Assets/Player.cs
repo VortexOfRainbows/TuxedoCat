@@ -35,17 +35,21 @@ public class Control
 }
 public class Player : MonoBehaviour
 {
+    public static Player Instance;
     public static Control Control { get; private set; } = new Control();
     public static Control PrevControl { get; private set; } = new Control();
+    public static Vector3 Position => Instance.transform.position;
+    public GameObject GrappleHookPrefab;
+    private GameObject Grapple;
     public Rigidbody2D RB;
     public bool TouchingGround = false;
     public void Start()
     {
-        
+        Instance = this;
     }
     public void Update()
     {
-
+        Instance = this;
     }
     public void FixedUpdate()
     {
@@ -55,17 +59,45 @@ public class Player : MonoBehaviour
         Vector2 velo = RB.velocity;
 
         Vector2 targetVelocity = Vector2.zero;
+        float topSpeed = TouchingGround ? 5 : 6;
+        float inertia = TouchingGround ? 0.08f : 0.01f;
+
         if (Control.Left)
-            targetVelocity.x -= 5;
+            targetVelocity.x -= topSpeed;
         if (Control.Right)
-            targetVelocity.x += 5;
+            targetVelocity.x += topSpeed;
 
-        velo.x = Mathf.Lerp(velo.x, targetVelocity.x, 0.08f);
+        if (TouchingGround)
+            velo.x = Mathf.Lerp(velo.x, targetVelocity.x, inertia);
+        else
+        {
+            velo += targetVelocity * inertia;
+            velo.x *= 1 - inertia;
+        }
 
-        if(Control.Up && TouchingGround)
+
+        if (Control.Up && TouchingGround)
         {
             velo.y += 5;
             TouchingGround = true;
+        }
+
+        if (Control.MouseLeft)
+        {
+            Vector2 toMouse = Utils.MouseWorld -(Vector2)transform.position;
+            if (Grapple == null)
+            {
+                Grapple = Instantiate(GrappleHookPrefab, transform.position, Quaternion.identity);
+                Grapple.GetComponent<Rigidbody2D>().velocity = toMouse.normalized * 12;
+            }
+        }
+        else
+        {
+            if (Grapple != null)
+            {
+                Destroy(Grapple);
+            }
+
         }
 
         RB.velocity = velo;
