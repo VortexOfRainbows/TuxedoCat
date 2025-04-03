@@ -43,6 +43,7 @@ public class Player : MonoBehaviour
     private GameObject Grapple;
     public Rigidbody2D RB;
     public bool TouchingGround = false;
+    public int TimeSpentNotColliding = 0;
     public void Start()
     {
         Instance = this;
@@ -88,7 +89,7 @@ public class Player : MonoBehaviour
             if (Grapple == null)
             {
                 Grapple = Instantiate(GrappleHookPrefab, transform.position, Quaternion.identity);
-                Grapple.GetComponent<Rigidbody2D>().velocity = toMouse.normalized * 12;
+                Grapple.GetComponent<Rigidbody2D>().velocity = toMouse.normalized * 16;
             }
         }
         else
@@ -102,12 +103,28 @@ public class Player : MonoBehaviour
 
         RB.velocity = velo;
         TouchingGround = false;
+        TimeSpentNotColliding++;
     }
     public void OnTriggerStay2D(Collider2D collision)
     {
         if(collision.CompareTag("World"))
         {
             TouchingGround = true;
+        }
+    }
+    public void OnCollisionEnter2D(Collision2D collision)
+    {
+        Collide2D(collision);
+    }
+    public void OnCollisionStay2D(Collision2D collision)
+    {
+        Collide2D(collision);
+    }
+    public void Collide2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("World"))
+        {
+            TimeSpentNotColliding = 0;
         }
     }
 }
