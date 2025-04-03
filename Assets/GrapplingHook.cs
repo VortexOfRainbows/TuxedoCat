@@ -1,7 +1,11 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Security.Cryptography;
 using Unity.VisualScripting;
+using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Rendering;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class GrapplingHook : MonoBehaviour
 {
@@ -12,18 +16,18 @@ public class GrapplingHook : MonoBehaviour
     bool AttachedPrev = false;
     float speedNextFrame = 0;
     float targetLength = 0;
+    float minDist = 0.65f;
+    float maxDist = 10;
     /// <summary>
-    /// ToDo: Allow right click to move up or down the grapple when combinedw ith Up or Down keys.
-    /// ToDo: Fix the right click to make it more intuitive and make momentum transfter properly
-    /// ToDo: Improve visuals, add max length, etc.
+    /// ToDo: Improve visuals
     /// </summary>
     public void FixedUpdate()
     {
         bool goUp = Player.Control.Up;
         bool goDown = Player.Control.Down;
-        bool notOnWall = Player.Instance.TimeSpentNotColliding > 5;
-        float minDist = 0.65f;
-        float maxDist = 10;
+        bool onWall = Player.Instance.TimeSpentNotColliding < 5;
+        float pullSpeed = 4f;
+        float pushSpeed = 1f;
         if (Attached)
         {
             if(!AttachedPrev)
@@ -32,44 +36,52 @@ public class GrapplingHook : MonoBehaviour
                 RB.velocity *= 0.0f;
                 RB.gravityScale = 0;
             }
-
-            Vector3 toGrapple = transform.position - Player.Position;
-            float moveUpOrDown = goUp ? -4 : goDown ? 2 : 0;
-            float actualLength = toGrapple.magnitude;
-            toGrapple.y *= 0.5f;
-            if (goDown && actualLength > targetLength)
-                targetLength = actualLength;
-            if (goUp && actualLength < targetLength)
-                targetLength = actualLength;
-            targetLength += moveUpOrDown * Time.fixedDeltaTime;
-            if (notOnWall)
+            Player.Instance.RB.velocity = new Vector2(Player.Instance.RB.velocity.x, Player.Instance.RB.velocity.y * 0.99f);
+            Vector2 toGrapple = transform.position - Player.Position;
+            float origDistance = toGrapple.magnitude;
+            toGrapple -= Player.Instance.RB.velocity * Time.fixedDeltaTime;
+            float distance = toGrapple.magnitude;
+            if (goUp)
             {
-                targetLength = Mathf.Clamp(targetLength, minDist, maxDist);
-                Vector2 targetGrappleVelo = toGrapple.normalized * (0.2f - Mathf.Abs(moveUpOrDown) * Time.fixedDeltaTime);
-                Player.Instance.RB.velocity = new Vector2(Player.Instance.RB.velocity.x, Player.Instance.RB.velocity.y * 0.99f);
-                Player.Instance.RB.velocity += targetGrappleVelo;
-                float currentSpeed = Player.Instance.RB.velocity.magnitude;
-                Vector3 nextPosition = (Vector2)Player.Position + Player.Instance.RB.velocity * Time.fixedDeltaTime;
-                Vector2 toGrappleFromNext = transform.position - nextPosition;
-                float nextLength = toGrappleFromNext.magnitude;
-                float distanceThatNeedsToBeMadeUp = targetLength - nextLength;
-                if (((distanceThatNeedsToBeMadeUp < 0 && goUp) || (distanceThatNeedsToBeMadeUp > 0 && goDown) || (!goDown && !goUp) || nextLength < maxDist || nextLength > minDist))
-                    Player.Instance.RB.velocity -= (toGrappleFromNext.normalized * distanceThatNeedsToBeMadeUp / Time.fixedDeltaTime); //fix velocity to the grapple point
+                if (origDistance < targetLength)
+                    targetLength = origDistance;
+                targetLength -= pullSpeed * Time.fixedDeltaTime;
             }
-            else
+            if (goDown)
             {
-                if (targetLength > maxDist)
+                if(onWall)
                 {
-                    float distanceINeedToTravel = targetLength - maxDist;
-                    Debug.Log(distanceINeedToTravel);
-                    Player.Instance.transform.position += toGrapple.normalized * distanceINeedToTravel;
+                    targetLength = distance;
+                }
+                else
+                {
+                    if (origDistance > targetLength)
+                        targetLength = origDistance;
+                    targetLength += pushSpeed * Time.fixedDeltaTime;
                 }
             }
+            if(toGrapple.y < 0) //Player is above the grapple
+            {
+                targetLength = Mathf.Min(origDistance, distance);
+            }
+            targetLength = Mathf.Clamp(targetLength, minDist, maxDist);
+            float distDiff = distance - targetLength;
+            bool snapToDistance = true;
+
+            if (goUp && distDiff < 0)
+                snapToDistance = false;
+            if (goDown && distDiff > 0)
+                snapToDistance = false;
+            if (targetLength == maxDist || targetLength == minDist)
+                snapToDistance = true;
+
+            if (snapToDistance)
+                Player.Instance.RB.velocity += toGrapple.normalized * distDiff / Time.fixedDeltaTime;
         }
         if(!Attached)
         {
-            Vector2 toGrapple = transform.position - Player.Position;
-            targetLength = toGrapple.magnitude + RB.velocity.magnitude * Time.fixedDeltaTime;
+            Vector2 toGrapple = transform.position + (Vector3)RB.velocity * Time.fixedDeltaTime - Player.Position - (Vector3)Player.Instance.RB.velocity * Time.fixedDeltaTime;
+            targetLength = toGrapple.magnitude ;
             if(targetLength > maxDist)
             {
                 Destroy(gameObject);
@@ -86,15 +98,28 @@ public class GrapplingHook : MonoBehaviour
     {
         if(points == null)
             points = new List<GameObject>();
-        while(points.Count < 10)
+        while(points.Count < 25)
         {
             points.Add(Instantiate(GrapplePointPrefab, transform.position, Quaternion.identity));
         }
-        for(int i = 0; i < points.Count; ++i)
+        float distance = (transform.position - Player.Position).magnitude;
+        float distancePercent = distance / maxDist;
+        float iDistancePercent = 1 - distancePercent;
+        iDistancePercent *= iDistancePercent * iDistancePercent;
+        Vector2 prevPoint = (Vector2)Player.Position;
+        for (int i = 0; i < points.Count; ++i)
         {
-            float percent = i / (float)points.Count;
+            float percent = i / ((float)points.Count - 1);
+            float iPercent = 1 - percent;
             Vector3 targetPos = Vector3.Lerp(Player.Position, transform.position, percent);
-            points[i].transform.position = Vector3.Lerp(points[i].transform.position, targetPos, 1);
+            points[i].transform.position = Vector3.Lerp(points[i].transform.position, targetPos, 0.03f + 0.09f * distancePercent);
+            points[i].transform.position += (Vector3)RB.velocity * Time.fixedDeltaTime * percent * percent;
+            points[i].transform.position -= (Vector3)Player.Instance.RB.velocity * Time.fixedDeltaTime * percent * iPercent;
+            points[i].transform.position += (Vector3)Player.Instance.RB.velocity * Time.fixedDeltaTime * iPercent * iPercent;
+            Vector2 toPrev = prevPoint - (Vector2)points[i].transform.position;
+            points[i].transform.GetChild(0).transform.eulerAngles = new Vector3(0, 0, toPrev.ToRotation() * Mathf.Rad2Deg);
+            points[i].transform.GetChild(0).transform.localScale = new Vector3(toPrev.magnitude, 0.1f, 0.1f);
+            prevPoint = points[i].transform.position;
         }
     }
     public void OnDestroy()

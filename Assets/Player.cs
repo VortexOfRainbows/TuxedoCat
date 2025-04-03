@@ -61,7 +61,7 @@ public class Player : MonoBehaviour
 
         Vector2 targetVelocity = Vector2.zero;
         float topSpeed = TouchingGround ? 5 : 6;
-        float inertia = TouchingGround ? 0.08f : 0.01f;
+        float inertia = TouchingGround ? 0.05f : 0.01f;
 
         if (Control.Left)
             targetVelocity.x -= topSpeed;
