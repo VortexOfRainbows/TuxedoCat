@@ -52,11 +52,8 @@ public class Player : MonoBehaviour
     {
         Instance = this;
     }
-    public void FixedUpdate()
+    public void MovementUpdate()
     {
-        PrevControl.CopyFrom(Control);
-        Control.ControlUpdate();
-
         Vector2 velo = RB.velocity;
 
         Vector2 targetVelocity = Vector2.zero;
@@ -85,25 +82,25 @@ public class Player : MonoBehaviour
 
         if (Control.MouseLeft)
         {
-            Vector2 toMouse = Utils.MouseWorld -(Vector2)transform.position;
+            Vector2 toMouse = Utils.MouseWorld - (Vector2)transform.position;
             if (Grapple == null)
             {
                 Grapple = Instantiate(GrappleHookPrefab, transform.position, Quaternion.identity);
                 Grapple.GetComponent<Rigidbody2D>().velocity = toMouse.normalized * 16;
             }
         }
-        else
-        {
-            if (Grapple != null)
-            {
-                Destroy(Grapple);
-            }
-
-        }
-
         RB.velocity = velo;
+    }
+    public void FixedUpdate()
+    {
+        PrevControl.CopyFrom(Control);
+        Control.ControlUpdate();
+        MovementUpdate();
+
         TouchingGround = false;
         TimeSpentNotColliding++;
+        Vector2 lerp = Vector2.Lerp(Camera.main.transform.position, Player.Position, 0.1f);
+        Camera.main.transform.position = new Vector3(lerp.x, lerp.y, -10);
     }
     public void OnTriggerStay2D(Collider2D collision)
     {

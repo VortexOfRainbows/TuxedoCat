@@ -14,7 +14,7 @@ public class GrapplingHook : MonoBehaviour
     public List<GameObject> points;
     bool Attached = false;
     bool AttachedPrev = false;
-    float speedNextFrame = 0;
+    bool Retracting = false;
     float targetLength = 0;
     float minDist = 0.65f;
     float maxDist = 10;
@@ -23,6 +23,7 @@ public class GrapplingHook : MonoBehaviour
     /// </summary>
     public void FixedUpdate()
     {
+        UpdatePoints();
         bool goUp = Player.Control.Up;
         bool goDown = Player.Control.Down;
         bool onWall = Player.Instance.TimeSpentNotColliding < 5;
@@ -36,6 +37,8 @@ public class GrapplingHook : MonoBehaviour
                 RB.velocity *= 0.0f;
                 RB.gravityScale = 0;
             }
+            if(onWall)
+                Player.Instance.RB.velocity *= 0.95f;
             Player.Instance.RB.velocity = new Vector2(Player.Instance.RB.velocity.x, Player.Instance.RB.velocity.y * 0.99f);
             Vector2 toGrapple = transform.position - Player.Position;
             float origDistance = toGrapple.magnitude;
@@ -78,20 +81,38 @@ public class GrapplingHook : MonoBehaviour
             if (snapToDistance)
                 Player.Instance.RB.velocity += toGrapple.normalized * distDiff / Time.fixedDeltaTime;
         }
-        if(!Attached)
+        Vector2 toGrapple2 = transform.position + (Vector3)RB.velocity * Time.fixedDeltaTime - Player.Position - (Vector3)Player.Instance.RB.velocity * Time.fixedDeltaTime;
+        targetLength = toGrapple2.magnitude;
+        if (!Attached)
         {
-            Vector2 toGrapple = transform.position + (Vector3)RB.velocity * Time.fixedDeltaTime - Player.Position - (Vector3)Player.Instance.RB.velocity * Time.fixedDeltaTime;
-            targetLength = toGrapple.magnitude ;
             if(targetLength > maxDist)
+            {
+                Retracting = true;
+            }
+        }
+        if (!Player.Control.MouseLeft)
+            Retracting = true;
+        if (Retracting)
+        {
+            float speed = RB.velocity.magnitude + 1f;
+            if(Attached)
+            {
+                speed = 10;
+            }
+            Attached = false;
+            RB.velocity = -toGrapple2.normalized * speed;
+            if(targetLength < minDist)
             {
                 Destroy(gameObject);
             }
         }
-        UpdatePoints();
-        if(RB.velocity.sqrMagnitude > 0.2f)
-        {
-            RB.rotation = RB.velocity.ToRotation() * Mathf.Rad2Deg; 
-        }
+        Vector2 toNearLastPoint = points[points.Count - 6].transform.position - transform.position;
+        float targetRotation = RB.rotation;
+        if(RB.velocity.sqrMagnitude > 0.2f && !Retracting)
+            RB.rotation = RB.velocity.ToRotation() * Mathf.Rad2Deg;
+        else if (toNearLastPoint.sqrMagnitude > 0.01f)
+            targetRotation = (-toNearLastPoint).ToRotation() * Mathf.Rad2Deg;
+        RB.rotation = Mathf.LerpAngle(RB.rotation, targetRotation, 0.2f);
         AttachedPrev = Attached;
     }
     public void UpdatePoints()
@@ -104,8 +125,8 @@ public class GrapplingHook : MonoBehaviour
         }
         float distance = (transform.position - Player.Position).magnitude;
         float distancePercent = distance / maxDist;
-        float iDistancePercent = 1 - distancePercent;
-        iDistancePercent *= iDistancePercent * iDistancePercent;
+        if (Retracting)
+            distancePercent = 2.2f;
         Vector2 prevPoint = (Vector2)Player.Position;
         for (int i = 0; i < points.Count; ++i)
         {
@@ -131,7 +152,7 @@ public class GrapplingHook : MonoBehaviour
     {
         if (collision.CompareTag("World"))
         {
-            Attached = true;
+            Attached = !Retracting;
         }
     }
 }
