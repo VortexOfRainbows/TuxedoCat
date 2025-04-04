@@ -1,23 +1,17 @@
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Security.Cryptography;
-using Unity.VisualScripting;
-using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.Rendering;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class GrapplingHook : MonoBehaviour
 {
     public GameObject GrapplePointPrefab;
     public Rigidbody2D RB;
     public List<GameObject> points;
-    bool Attached = false;
-    bool AttachedPrev = false;
-    bool Retracting = false;
-    float targetLength = 0;
-    float minDist = 0.65f;
-    float maxDist = 10;
+    public bool Attached = false;
+    public bool AttachedPrev = false;
+    public bool Retracting = false;
+    public float targetLength = 0;
+    public float minDist = 0.65f;
+    public float maxDist = 10;
     /// <summary>
     /// ToDo: Improve visuals
     /// </summary>
@@ -26,7 +20,7 @@ public class GrapplingHook : MonoBehaviour
         UpdatePoints();
         bool goUp = Player.Control.Up;
         bool goDown = Player.Control.Down;
-        bool onWall = Player.Instance.TimeSpentNotColliding < 5;
+        bool onWall = Player.Instance.TimeSpentNotColliding < 4;
         float pullSpeed = 4f;
         float pushSpeed = 1f;
         if (Attached)
@@ -38,8 +32,13 @@ public class GrapplingHook : MonoBehaviour
                 RB.gravityScale = 0;
             }
             if(onWall)
-                Player.Instance.RB.velocity *= 0.95f;
-            Player.Instance.RB.velocity = new Vector2(Player.Instance.RB.velocity.x, Player.Instance.RB.velocity.y * 0.99f);
+            {
+                Player.Instance.RB.velocity = new Vector2(Mathf.Abs(Player.Instance.RB.velocity.x) > 3 ? Player.Instance.RB.velocity.x * 0.5f : Player.Instance.RB.velocity.x * 0.95f, Player.Instance.RB.velocity.y > 0 ? Player.Instance.RB.velocity.y * 0.5f : Player.Instance.RB.velocity.y * 0.94f);
+            }
+            else
+            {
+                Player.Instance.RB.velocity = new Vector2(Player.Instance.RB.velocity.x, Player.Instance.RB.velocity.y * 0.99f);
+            }
             Vector2 toGrapple = transform.position - Player.Position;
             float origDistance = toGrapple.magnitude;
             toGrapple -= Player.Instance.RB.velocity * Time.fixedDeltaTime;
@@ -48,7 +47,8 @@ public class GrapplingHook : MonoBehaviour
             {
                 if (origDistance < targetLength)
                     targetLength = origDistance;
-                targetLength -= pullSpeed * Time.fixedDeltaTime;
+                if(Mathf.Abs(targetLength - distance) < pullSpeed * Time.fixedDeltaTime)
+                    targetLength -= pullSpeed * Time.fixedDeltaTime;
             }
             if (goDown)
             {
@@ -60,7 +60,8 @@ public class GrapplingHook : MonoBehaviour
                 {
                     if (origDistance > targetLength)
                         targetLength = origDistance;
-                    targetLength += pushSpeed * Time.fixedDeltaTime;
+                    if(Mathf.Abs(targetLength - distance) < pushSpeed * Time.fixedDeltaTime)
+                        targetLength += pushSpeed * Time.fixedDeltaTime;
                 }
             }
             if(toGrapple.y < 0) //Player is above the grapple

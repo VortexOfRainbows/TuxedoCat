@@ -102,7 +102,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 0.1
+  m_GravityScale: 2
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -164,3 +164,9 @@ MonoBehaviour:
   GrapplePointPrefab: {fileID: 933802254669875285, guid: 8d5a459020242df42bd327ea46d6731d, type: 3}
   RB: {fileID: 6527776340979504533}
   points: []
+  Attached: 0
+  AttachedPrev: 0
+  Retracting: 0
+  targetLength: 0
+  minDist: 0.65
+  maxDist: 10
