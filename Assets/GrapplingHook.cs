@@ -21,7 +21,7 @@ public class GrapplingHook : MonoBehaviour
         bool goUp = Player.Control.Up;
         bool goDown = Player.Control.Down;
         bool onWall = Player.Instance.TimeSpentNotColliding < 4;
-        float pullSpeed = 4f;
+        float pullSpeed = 4.5f;
         float pushSpeed = 1f;
         if (Attached)
         {

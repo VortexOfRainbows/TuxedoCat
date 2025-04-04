@@ -57,7 +57,7 @@ public class Player : MonoBehaviour
         Vector2 velo = RB.velocity;
 
         Vector2 targetVelocity = Vector2.zero;
-        float topSpeed = TouchingGround ? 5 : 6;
+        float topSpeed = TouchingGround ? 5 : 8;
         float inertia = TouchingGround ? 0.05f : 0.01f;
         float jumpForce = 8.1f;
 
@@ -87,7 +87,7 @@ public class Player : MonoBehaviour
             if (Grapple == null)
             {
                 Grapple = Instantiate(GrappleHookPrefab, transform.position, Quaternion.identity);
-                Grapple.GetComponent<Rigidbody2D>().velocity = toMouse.normalized * 16;
+                Grapple.GetComponent<Rigidbody2D>().velocity = toMouse.normalized * 24 + RB.velocity * 0.2f;
             }
         }
         RB.velocity = velo;
