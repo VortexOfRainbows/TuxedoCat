@@ -82020,6 +82020,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &616237518 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 827126159077522632, guid: 20d969b4e1e422e488c2d53ffed8d4d4, type: 3}
+  m_PrefabInstance: {fileID: 1035063406072636900}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -82721,6 +82726,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2141624559690462796, guid: 20d969b4e1e422e488c2d53ffed8d4d4, type: 3}
+      propertyPath: Eyes
+      value: 
+      objectReference: {fileID: 616237518}
     - target: {fileID: 4298517760994487732, guid: 20d969b4e1e422e488c2d53ffed8d4d4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -82764,10 +82773,6 @@ PrefabInstance:
     - target: {fileID: 6259213768008090709, guid: 20d969b4e1e422e488c2d53ffed8d4d4, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 7180884235890227367, guid: 20d969b4e1e422e488c2d53ffed8d4d4, type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
