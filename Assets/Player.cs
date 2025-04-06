@@ -1,6 +1,10 @@
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
+using static UnityEngine.EventSystems.EventTrigger;
+using UnityEngine.UI;
+using UnityEngine.XR;
 
 public class Control
 {
@@ -57,8 +61,9 @@ public class Player : MonoBehaviour
         Vector2 velo = RB.velocity;
 
         Vector2 targetVelocity = Vector2.zero;
-        float topSpeed = TouchingGround ? 5 : 6;
+        float topSpeed = TouchingGround ? 5 : 8;
         float inertia = TouchingGround ? 0.05f : 0.01f;
+        float jumpForce = 8.1f;
 
         if (Control.Left)
             targetVelocity.x -= topSpeed;
@@ -76,7 +81,7 @@ public class Player : MonoBehaviour
 
         if (Control.Up && TouchingGround)
         {
-            velo.y += 5;
+            velo.y += jumpForce;
             TouchingGround = true;
         }
 
@@ -86,10 +91,11 @@ public class Player : MonoBehaviour
             if (Grapple == null)
             {
                 Grapple = Instantiate(GrappleHookPrefab, transform.position, Quaternion.identity);
-                Grapple.GetComponent<Rigidbody2D>().velocity = toMouse.normalized * 16;
+                Grapple.GetComponent<Rigidbody2D>().velocity = toMouse.normalized * 24 + RB.velocity * 0.2f;
             }
         }
         RB.velocity = velo;
+        PlayerAnimation();
     }
     public void FixedUpdate()
     {
@@ -123,5 +129,93 @@ public class Player : MonoBehaviour
         {
             TimeSpentNotColliding = 0;
         }
+    }
+
+    public static readonly Vector2 ArmLeftPos = new Vector3(0.3125f, -0.125f, 0);
+    public static readonly Vector2 ArmRightPos = new Vector3(-0.3125f, -0.125f, 0); 
+    public static readonly Vector2 LegLeftPos = new Vector3(-0.15625f, -0.65625f, 0);
+    public static readonly Vector2 LegRightPos = new Vector3(0.15625f, -0.65625f, 0);
+    public float Dir;
+    public float prevDir;
+    public GameObject Visual;
+    public GameObject Head;
+    public GameObject Eyes;
+    public GameObject Body;
+    public GameObject LegLeft;
+    public GameObject LegRight;
+    public GameObject ArmLeft;
+    public GameObject ArmRight;
+    public float walkCounter = 0;
+    public Vector2 oldVelo = Vector2.zero;
+    public void PlayerAnimation()
+    {
+        float veloDiff = RB.velocity.y - oldVelo.y;
+        oldVelo = RB.velocity;
+        float squashImpact = 1 - veloDiff;
+        if(Mathf.Abs(RB.velocity.x) > 0.1f)
+            Dir = Mathf.Sign(RB.velocity.x);
+        float yScale = Mathf.Lerp(Visual.transform.localScale.y, Mathf.Clamp(squashImpact, RB.velocity.y <= 0.5f && TouchingGround ? 0.6f : 1, 1), squashImpact < 0.9f ? 0.3f : 0.05f);
+        Visual.transform.localScale = new Vector3(Dir * (2 - yScale), yScale, 1);
+        Visual.transform.localPosition = new Vector3(0, Visual.transform.localScale.y - 1, 0);
+        float targetR = (Grapple != null && Grapple.GetComponent<GrapplingHook>().Attached) ? RB.velocity.x * 2.25f : RB.velocity.x * -0.75f * Mathf.Sqrt(1 + 0.5f * MathF.Abs(RB.velocity.y)) * Mathf.Sign(RB.velocity.y + 0.1f);
+        Visual.transform.localEulerAngles = new Vector3(0, 0, Mathf.LerpAngle(Visual.transform.localEulerAngles.z, targetR, 0.04f));
+        float walkMotion = 4f / 32f;
+        float walkDirection = 1f;
+        //if (Entity.Velocity.y < -0.0 && MathF.Abs(Entity.Velocity.y) > 0.001f && MathF.Abs(Entity.Velocity.x) < 0.001f)
+        //    walkDirection = -1;
+        float velocity = Mathf.Abs(RB.velocity.x);
+        float verticalVelo = Mathf.Abs(RB.velocity.y);
+        float walkSpeedMultiplier = Mathf.Clamp(Math.Abs(velocity / 2f), 0, 1f);
+        float jumpSpeedMultiplier = Mathf.Clamp(Math.Abs(verticalVelo / 3f), 0, 1f);
+        walkCounter += walkDirection * velocity * Mathf.Deg2Rad * Mathf.Clamp(walkSpeedMultiplier * 9, 0, 1);
+        walkCounter = walkCounter.WrapAngle();
+
+        Vector2 circularMotion = new Vector2(walkMotion, 0).RotatedBy(-walkCounter) * walkSpeedMultiplier;
+        circularMotion.x *= 0.5f;
+        Vector2 inverse = -circularMotion;
+        if (circularMotion.y < 0)
+            circularMotion.y *= 0.1f;
+        if (inverse.y < 0)
+            inverse.y *= 0.1f;
+
+        if(TouchingGround)
+        {
+            LegLeft.transform.localPosition = LegLeftPos + inverse + new Vector2(2 / 32f, 0) * walkSpeedMultiplier;
+            LegRight.transform.localPosition = LegRightPos + circularMotion + new Vector2(-2 / 32f, 0) * walkSpeedMultiplier;
+            Head.transform.localPosition = new Vector3(0, Mathf.Sin(walkCounter * 2 + Mathf.PI) * 1f / 32f, 0);
+            Body.transform.localPosition = new Vector3(0, Mathf.Sin(walkCounter * 2 + Mathf.PI / 2f) * 1f / 32f, 0);
+            float leftAngle = Mathf.Sin(walkCounter) * -15 * walkSpeedMultiplier;
+            float rightAngle = -leftAngle;
+            if (Grapple == null)
+                ArmLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z, leftAngle, 0.07f);
+            ArmRight.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmRight.transform.localEulerAngles.z, rightAngle, 0.07f);
+            
+            leftAngle = Mathf.Cos(walkCounter) * -12 * walkSpeedMultiplier;
+            rightAngle = -leftAngle;
+            LegLeft.transform.localEulerAngles = new Vector3(0, 0, leftAngle);
+            LegRight.transform.localEulerAngles = new Vector3(0, 0, rightAngle);
+        }
+        else
+        {
+            LegLeft.transform.localPosition = LegLeft.transform.localPosition.Lerp(LegLeftPos + new Vector2(1, 0) / 32f * jumpSpeedMultiplier, 0.05f);
+            LegRight.transform.localPosition = LegRight.transform.localPosition.Lerp(LegRightPos + new Vector2(-1, 0) / 32f * jumpSpeedMultiplier, 0.05f);
+            LegLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(LegLeft.transform.localEulerAngles.z, 12f * jumpSpeedMultiplier, 0.05f);
+            LegRight.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(LegRight.transform.localEulerAngles.z, -12f * jumpSpeedMultiplier, 0.05f);
+            if (Grapple == null)
+                ArmLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z, -30 * jumpSpeedMultiplier, 0.05f);
+            ArmRight.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmRight.transform.localEulerAngles.z, 30 * jumpSpeedMultiplier, 0.05f);
+        }
+
+        if(Grapple != null)
+        {
+            Vector2 toHook = Grapple.transform.position - ArmLeft.transform.position;
+            toHook.x *= Dir;
+            ArmLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z, (toHook.ToRotation() * Mathf.Rad2Deg + 90f), prevDir != Dir ? 1 : 0.1f);
+        }
+        Vector2 toMouse = Utils.MouseWorld - (Vector2)transform.position;
+        Eyes.transform.localPosition = new Vector3(toMouse.normalized.x / 32f * Dir, 0, 0);
+        toMouse.x = Mathf.Abs(toMouse.x);
+        Head.transform.localEulerAngles = Vector3.forward * (toMouse.ToRotation() * Mathf.Rad2Deg * 0.125f);
+        prevDir = Dir;
     }
 }
