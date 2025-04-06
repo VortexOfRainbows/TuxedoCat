@@ -1,10 +1,6 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
-using static UnityEngine.EventSystems.EventTrigger;
-using UnityEngine.UI;
-using UnityEngine.XR;
+using UnityEngine.Android;
 
 public class Control
 {
@@ -42,12 +38,16 @@ public class Player : MonoBehaviour
     public static Player Instance;
     public static Control Control { get; private set; } = new Control();
     public static Control PrevControl { get; private set; } = new Control();
-    public static Vector3 Position => Instance.transform.position;
+    public static Vector3 Position => Instance == null ? (Instance = FindFirstObjectByType<Player>()).transform.position : Instance.transform.position;
     public GameObject GrappleHookPrefab;
     private GameObject Grapple;
     public Rigidbody2D RB;
     public bool TouchingGround = false;
     public int TimeSpentNotColliding = 0;
+    public int UseAnimation = 0;
+    public float AnimSpeed => 40f;
+    public bool isUsingItem => Control.MouseLeft || (UseAnimation > 0 && UseAnimation <= AnimSpeed * 2);
+    public Vector2 armTargetPos = Vector2.zero;
     public void Start()
     {
         Instance = this;
@@ -58,8 +58,9 @@ public class Player : MonoBehaviour
     }
     public void MovementUpdate()
     {
+        if (Mathf.Abs(RB.velocity.x) > 0.1f)
+            Dir = Mathf.Sign(RB.velocity.x);
         Vector2 velo = RB.velocity;
-
         Vector2 targetVelocity = Vector2.zero;
         float topSpeed = TouchingGround ? 5 : 8;
         float inertia = TouchingGround ? 0.05f : 0.01f;
@@ -85,14 +86,51 @@ public class Player : MonoBehaviour
             TouchingGround = true;
         }
 
-        if (Control.MouseLeft)
+        if (isUsingItem)
         {
             Vector2 toMouse = Utils.MouseWorld - (Vector2)transform.position;
-            if (Grapple == null)
+            UseAnimation++;
+            float percent = UseAnimation / AnimSpeed;
+            if (percent < 1)
+                Dir = Mathf.Sign(toMouse.x);
+            if (percent < 0.1f)
             {
-                Grapple = Instantiate(GrappleHookPrefab, transform.position, Quaternion.identity);
-                Grapple.GetComponent<Rigidbody2D>().velocity = toMouse.normalized * 24 + RB.velocity * 0.2f;
+                armTargetPos = (Vector2)transform.position + new Vector2(Dir, 1);
             }
+            else if (percent < 0.2f)
+            {
+                armTargetPos = (Vector2)transform.position + new Vector2(Dir, 3);
+            }
+            else if (percent < 0.6f)
+            {
+                armTargetPos = (Vector2)transform.position + new Vector2(0, 2);
+            }
+            else if (percent < 0.7f)
+            {
+                armTargetPos = (Vector2)transform.position + new Vector2(Dir, 0);
+            }
+            else
+            {
+                if (Grapple == null)
+                {
+                    Grapple = Instantiate(GrappleHookPrefab, transform.position, Quaternion.identity);
+                    Grapple.GetComponent<Rigidbody2D>().velocity = toMouse.normalized * 24 + RB.velocity * 0.2f;
+                }
+                armTargetPos = (Vector2)transform.position + new Vector2(-Dir * 0.5f, -2);
+            }
+        }
+        else
+        {
+            armTargetPos = Vector2.zero;
+            UseAnimation = 0;
+        }
+        if(Grapple != null)
+        {
+            ItemSprite.sprite = Resources.Load<Sprite>("JustYarn");
+        }
+        else
+        {
+            ItemSprite.sprite = Resources.Load<Sprite>("YarnWithHook");
         }
         RB.velocity = velo;
         PlayerAnimation();
@@ -135,8 +173,8 @@ public class Player : MonoBehaviour
     public static readonly Vector2 ArmRightPos = new Vector3(-0.3125f, -0.125f, 0); 
     public static readonly Vector2 LegLeftPos = new Vector3(-0.15625f, -0.65625f, 0);
     public static readonly Vector2 LegRightPos = new Vector3(0.15625f, -0.65625f, 0);
-    public float Dir;
-    public float prevDir;
+    private float Dir = 1;
+    private float prevDir = 1;
     public GameObject Visual;
     public GameObject Head;
     public GameObject Eyes;
@@ -145,15 +183,16 @@ public class Player : MonoBehaviour
     public GameObject LegRight;
     public GameObject ArmLeft;
     public GameObject ArmRight;
+    public SpriteRenderer ItemSprite;
+    public Vector2 oldItemPos;
     public float walkCounter = 0;
     public Vector2 oldVelo = Vector2.zero;
     public void PlayerAnimation()
     {
+        oldItemPos = ItemSprite.transform.position;
         float veloDiff = RB.velocity.y - oldVelo.y;
         oldVelo = RB.velocity;
         float squashImpact = 1 - veloDiff;
-        if(Mathf.Abs(RB.velocity.x) > 0.1f)
-            Dir = Mathf.Sign(RB.velocity.x);
         float yScale = Mathf.Lerp(Visual.transform.localScale.y, Mathf.Clamp(squashImpact, RB.velocity.y <= 0.5f && TouchingGround ? 0.6f : 1, 1), squashImpact < 0.9f ? 0.3f : 0.05f);
         Visual.transform.localScale = new Vector3(Dir * (2 - yScale), yScale, 1);
         Visual.transform.localPosition = new Vector3(0, Visual.transform.localScale.y - 1, 0);
@@ -186,7 +225,7 @@ public class Player : MonoBehaviour
             Body.transform.localPosition = new Vector3(0, Mathf.Sin(walkCounter * 2 + Mathf.PI / 2f) * 1f / 32f, 0);
             float leftAngle = Mathf.Sin(walkCounter) * -15 * walkSpeedMultiplier;
             float rightAngle = -leftAngle;
-            if (Grapple == null)
+            if (Grapple == null && armTargetPos == Vector2.zero)
                 ArmLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z, leftAngle, 0.07f);
             ArmRight.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmRight.transform.localEulerAngles.z, rightAngle, 0.07f);
             
@@ -201,16 +240,23 @@ public class Player : MonoBehaviour
             LegRight.transform.localPosition = LegRight.transform.localPosition.Lerp(LegRightPos + new Vector2(-1, 0) / 32f * jumpSpeedMultiplier, 0.05f);
             LegLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(LegLeft.transform.localEulerAngles.z, 12f * jumpSpeedMultiplier, 0.05f);
             LegRight.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(LegRight.transform.localEulerAngles.z, -12f * jumpSpeedMultiplier, 0.05f);
-            if (Grapple == null)
+            if (Grapple == null && armTargetPos == Vector2.zero)
                 ArmLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z, -30 * jumpSpeedMultiplier, 0.05f);
             ArmRight.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmRight.transform.localEulerAngles.z, 30 * jumpSpeedMultiplier, 0.05f);
         }
-
-        if(Grapple != null)
+        if(Grapple != null && UseAnimation > AnimSpeed)
         {
-            Vector2 toHook = Grapple.transform.position - ArmLeft.transform.position;
+            GrapplingHook hook = Grapple.GetComponent<GrapplingHook>();
+            if(hook.points != null && hook.points.Count > 0)
+                {
+                armTargetPos = hook.points[0].transform.position * 0.95f + hook.transform.position * 0.05f;
+            }
+        }
+        if(armTargetPos != Vector2.zero)
+        {
+            Vector2 toHook = armTargetPos - (Vector2)ArmLeft.transform.position;
             toHook.x *= Dir;
-            ArmLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z, (toHook.ToRotation() * Mathf.Rad2Deg + 90f), prevDir != Dir ? 1 : 0.1f);
+            ArmLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z, toHook.ToRotation() * Mathf.Rad2Deg + 90f, prevDir != Dir ? 1 : 0.1f);
         }
         Vector2 toMouse = Utils.MouseWorld - (Vector2)transform.position;
         Eyes.transform.localPosition = new Vector3(toMouse.normalized.x / 32f * Dir, 0, 0);
