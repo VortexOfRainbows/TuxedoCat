@@ -114,7 +114,7 @@ public class Player : MonoBehaviour
                 if (Grapple == null)
                 {
                     Grapple = Instantiate(GrappleHookPrefab, transform.position, Quaternion.identity);
-                    Grapple.GetComponent<Rigidbody2D>().velocity = toMouse.normalized * 24 + RB.velocity * 0.2f;
+                    Grapple.GetComponent<Rigidbody2D>().velocity = toMouse.normalized * 32 + RB.velocity * 0.2f;
                 }
                 armTargetPos = (Vector2)transform.position + new Vector2(-Dir * 0.5f, -2);
             }
@@ -248,7 +248,7 @@ public class Player : MonoBehaviour
         {
             GrapplingHook hook = Grapple.GetComponent<GrapplingHook>();
             if(hook.points != null && hook.points.Count > 0)
-                {
+            {
                 armTargetPos = hook.points[0].transform.position * 0.95f + hook.transform.position * 0.05f;
             }
         }

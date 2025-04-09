@@ -111,9 +111,9 @@ public class GrapplingHook : MonoBehaviour
         float targetRotation = RB.rotation;
         if(RB.velocity.sqrMagnitude > 0.2f && !Retracting)
             RB.rotation = RB.velocity.ToRotation() * Mathf.Rad2Deg;
-        else if (toNearLastPoint.sqrMagnitude > 0.01f)
-            targetRotation = (-toNearLastPoint).ToRotation() * Mathf.Rad2Deg;
-        RB.rotation = Mathf.LerpAngle(RB.rotation, targetRotation, 0.2f);
+        //else if (toNearLastPoint.sqrMagnitude > 0.01f)
+        //    targetRotation = (-toNearLastPoint).ToRotation() * Mathf.Rad2Deg;
+        //RB.rotation = Mathf.LerpAngle(RB.rotation, targetRotation, 0.2f);
         AttachedPrev = Attached;
     }
     public void UpdatePoints()
