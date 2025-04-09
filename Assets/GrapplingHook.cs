@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class GrapplingHook : MonoBehaviour
 {
+    public Player Player;
+    public GameObject Owner;
+    public Rigidbody2D OwnerBody;
     public GameObject GrapplePointPrefab;
     public Rigidbody2D RB;
     public List<GameObject> points;
@@ -12,36 +15,43 @@ public class GrapplingHook : MonoBehaviour
     public float targetLength = 0;
     public float minDist = 0.65f;
     public float maxDist = 10;
-    /// <summary>
-    /// ToDo: Improve visuals
-    /// </summary>
+    public float pixelsInRope = 6f;
+    private int PointCount = 25;
     public void FixedUpdate()
     {
-        UpdatePoints();
-        bool goUp = Player.Control.Up;
-        bool goDown = Player.Control.Down;
-        bool onWall = Player.Instance.TimeSpentNotColliding < 4;
+        transform.SetParent(null);
+        if (targetLength != 0)
+            UpdatePoints();
+        bool goUp = Player != null ? Player.Control.Up : false;
+        bool goDown = Player != null ? Player.Control.Down : false;
+        bool onWall = Player != null ? Player.TimeSpentNotColliding < 4 : false;
         float pullSpeed = 4.5f;
         float pushSpeed = 1f;
         if (Attached)
         {
             if(!AttachedPrev)
             {
-                Player.Instance.RB.velocity *= 0.4f;
+                OwnerBody.velocity *= 0.4f;
                 RB.velocity *= 0.0f;
                 RB.gravityScale = 0;
             }
             if(onWall)
             {
-                Player.Instance.RB.velocity = new Vector2(Mathf.Abs(Player.Instance.RB.velocity.x) > 3 ? Player.Instance.RB.velocity.x * 0.5f : Player.Instance.RB.velocity.x * 0.95f, Player.Instance.RB.velocity.y > 0 ? Player.Instance.RB.velocity.y * 0.5f : Player.Instance.RB.velocity.y * 0.94f);
+                OwnerBody.velocity = new Vector2(Mathf.Abs(OwnerBody.velocity.x) > 3 ? OwnerBody.velocity.x * 0.5f : OwnerBody.velocity.x * 0.95f, OwnerBody.velocity.y > 0 ? OwnerBody.velocity.y * 0.5f : OwnerBody.velocity.y * 0.94f);
             }
             else
             {
-                Player.Instance.RB.velocity = new Vector2(Player.Instance.RB.velocity.x, Player.Instance.RB.velocity.y * 0.99f);
+                OwnerBody.velocity = new Vector2(OwnerBody.velocity.x, OwnerBody.velocity.y * 0.99f);
             }
-            Vector2 toGrapple = transform.position - Player.Position;
+            Vector2 toGrapple = transform.position - Owner.transform.position;
             float origDistance = toGrapple.magnitude;
-            toGrapple -= Player.Instance.RB.velocity * Time.fixedDeltaTime;
+            if (targetLength == 0)
+            {
+                targetLength = origDistance;
+                PointCount = (int)(targetLength / pixelsInRope * 32);
+                UpdatePoints();
+            }
+            toGrapple -= OwnerBody.velocity * Time.fixedDeltaTime;
             float distance = toGrapple.magnitude;
             if (goUp)
             {
@@ -80,9 +90,9 @@ public class GrapplingHook : MonoBehaviour
                 snapToDistance = true;
 
             if (snapToDistance)
-                Player.Instance.RB.velocity += toGrapple.normalized * distDiff / Time.fixedDeltaTime;
+                OwnerBody.velocity += toGrapple.normalized * distDiff / Time.fixedDeltaTime;
         }
-        Vector2 toGrapple2 = transform.position + (Vector3)RB.velocity * Time.fixedDeltaTime - Player.Position - (Vector3)Player.Instance.RB.velocity * Time.fixedDeltaTime;
+        Vector2 toGrapple2 = transform.position + (Vector3)RB.velocity * Time.fixedDeltaTime - Owner.transform.position - (Vector3)OwnerBody.velocity * Time.fixedDeltaTime;
         targetLength = toGrapple2.magnitude;
         if (!Attached)
         {
@@ -91,7 +101,7 @@ public class GrapplingHook : MonoBehaviour
                 Retracting = true;
             }
         }
-        if (!Player.Instance.isUsingItem)
+        if (Player != null && !Player.isUsingItem)
             Retracting = true;
         if (Retracting)
         {
@@ -107,31 +117,36 @@ public class GrapplingHook : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-        Vector2 toNearLastPoint = points[points.Count - 6].transform.position - transform.position;
-        float targetRotation = RB.rotation;
         if(RB.velocity.sqrMagnitude > 0.2f && !Retracting)
             RB.rotation = RB.velocity.ToRotation() * Mathf.Rad2Deg;
+        if(Player == null)
+        {
+            OwnerBody.rotation = toGrapple2.ToRotation() * Mathf.Rad2Deg - 90;
+            OwnerBody.velocity *= 0.995f;
+        }
         //else if (toNearLastPoint.sqrMagnitude > 0.01f)
         //    targetRotation = (-toNearLastPoint).ToRotation() * Mathf.Rad2Deg;
         //RB.rotation = Mathf.LerpAngle(RB.rotation, targetRotation, 0.2f);
         AttachedPrev = Attached;
     }
+    private bool RunOnce = true;
     public void UpdatePoints()
     {
         if(points == null)
             points = new List<GameObject>();
-        while(points.Count < 25)
+        while(points.Count < PointCount)
         {
             points.Add(Instantiate(GrapplePointPrefab, transform.position, Quaternion.identity));
         }
-        Vector3 itemPos = Player.Instance.ItemSprite.transform.position;
+        Vector3 itemPos = Player != null ? Player.ItemSprite.transform.position : (Vector2)Owner.transform.position + new Vector2(0, 0.2f).RotatedBy(OwnerBody.rotation * Mathf.Deg2Rad);
         float distance = (transform.position - itemPos).magnitude;
         float distancePercent = distance / maxDist;
         if (Retracting)
             distancePercent = 2.2f;
         Vector2 prevPoint = (Vector2)itemPos;
-        Vector2 itemVelocity = (Vector2)Player.Instance.ItemSprite.transform.position - Player.Instance.oldItemPos;
-        Vector2 playerVelo = itemVelocity / Time.fixedDeltaTime + Player.Instance.RB.velocity;
+        Vector2 itemVelocity = Player != null ? (Vector2)Player.ItemSprite.transform.position - Player.oldItemPos : Vector3.zero;
+        Vector2 ownerVelo = itemVelocity / Time.fixedDeltaTime + OwnerBody.velocity;
+        float added = RunOnce ? 1 : 0f;
         for (int i = 0; i < points.Count; ++i)
         {
             float percent = i / ((float)points.Count - 1);
@@ -139,22 +154,23 @@ public class GrapplingHook : MonoBehaviour
             Vector3 targetPos = Vector3.Lerp(itemPos, transform.position, percent);
             points[i].transform.position = Vector3.Lerp(points[i].transform.position, targetPos, 0.03f + 0.09f * distancePercent);
             points[i].transform.position += (Vector3)RB.velocity * Time.fixedDeltaTime * percent * percent;
-            points[i].transform.position -= (Vector3)playerVelo * Time.fixedDeltaTime * percent * iPercent;
-            points[i].transform.position += (Vector3)playerVelo * Time.fixedDeltaTime * iPercent * iPercent;
+            points[i].transform.position -= (Vector3)ownerVelo * Time.fixedDeltaTime * percent * iPercent;
+            points[i].transform.position += (Vector3)ownerVelo * Time.fixedDeltaTime * iPercent * iPercent;
             Vector2 toPrev = prevPoint - (Vector2)points[i].transform.position;
             points[i].transform.GetChild(0).transform.eulerAngles = new Vector3(0, 0, toPrev.ToRotation() * Mathf.Rad2Deg);
-            float horizontalScale = toPrev.magnitude * 32f / 6f; //32 pixels per unit, 6 pixel width sprite
+            float horizontalScale = toPrev.magnitude * 32f / pixelsInRope; //32 pixels per unit, 6 pixel width sprite
             points[i].transform.GetChild(0).transform.localScale = new Vector3(horizontalScale, Mathf.Clamp(0.8f - horizontalScale * 0.14f, 0, 1), 1f);
             prevPoint = points[i].transform.position;
         }
+        RunOnce = false;
     }
     public void OnDestroy()
     {
         for (int i = 0; i < points.Count; ++i)
             Destroy(points[i]);
-        if(Player.Instance != null)
+        if(Player != null)
         {
-            Player.Instance.UseAnimation = 0;
+            Player.UseAnimation = 0;
         }
     }
     public void OnTriggerStay2D(Collider2D collision)

@@ -82,6 +82,7 @@ public class Player : MonoBehaviour
 
         if (Control.Up && TouchingGround)
         {
+            velo.y *= 0.1f;
             velo.y += jumpForce;
             TouchingGround = true;
         }
@@ -115,6 +116,10 @@ public class Player : MonoBehaviour
                 {
                     Grapple = Instantiate(GrappleHookPrefab, transform.position, Quaternion.identity);
                     Grapple.GetComponent<Rigidbody2D>().velocity = toMouse.normalized * 32 + RB.velocity * 0.2f;
+                    GrapplingHook hook = Grapple.GetComponent<GrapplingHook>();
+                    hook.Owner = gameObject;
+                    hook.OwnerBody = RB;
+                    hook.Player = this;
                 }
                 armTargetPos = (Vector2)transform.position + new Vector2(-Dir * 0.5f, -2);
             }
@@ -148,7 +153,7 @@ public class Player : MonoBehaviour
     }
     public void OnTriggerStay2D(Collider2D collision)
     {
-        if(collision.CompareTag("World"))
+        if(collision.CompareTag("World") || collision.CompareTag("Standable"))
         {
             TouchingGround = true;
         }
@@ -163,12 +168,11 @@ public class Player : MonoBehaviour
     }
     public void Collide2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("World"))
+        if (collision.gameObject.CompareTag("World") || collision.gameObject.CompareTag("Standable"))
         {
             TimeSpentNotColliding = 0;
         }
     }
-
     public static readonly Vector2 ArmLeftPos = new Vector3(0.3125f, -0.125f, 0);
     public static readonly Vector2 ArmRightPos = new Vector3(-0.3125f, -0.125f, 0); 
     public static readonly Vector2 LegLeftPos = new Vector3(-0.15625f, -0.65625f, 0);
