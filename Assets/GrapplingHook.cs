@@ -101,7 +101,7 @@ public class GrapplingHook : MonoBehaviour
                 Retracting = true;
             }
         }
-        if (Player != null && !Player.isUsingItem)
+        if (Player != null && !Player.IsUsingItem)
             Retracting = true;
         if (Retracting)
         {
@@ -138,13 +138,13 @@ public class GrapplingHook : MonoBehaviour
         {
             points.Add(Instantiate(GrapplePointPrefab, transform.position, Quaternion.identity));
         }
-        Vector3 itemPos = Player != null ? Player.ItemSprite.transform.position : (Vector2)Owner.transform.position + new Vector2(0, 0.2f).RotatedBy(OwnerBody.rotation * Mathf.Deg2Rad);
+        Vector3 itemPos = Player != null ? Player.anim.ItemSprite.transform.position : (Vector2)Owner.transform.position + new Vector2(0, 0.2f).RotatedBy(OwnerBody.rotation * Mathf.Deg2Rad);
         float distance = (transform.position - itemPos).magnitude;
         float distancePercent = distance / maxDist;
         if (Retracting)
             distancePercent = 2.2f;
         Vector2 prevPoint = (Vector2)itemPos;
-        Vector2 itemVelocity = Player != null ? (Vector2)Player.ItemSprite.transform.position - Player.oldItemPos : Vector3.zero;
+        Vector2 itemVelocity = Player != null ? (Vector2)Player.anim.ItemSprite.transform.position - Player.anim.oldItemPos : Vector3.zero;
         Vector2 ownerVelo = itemVelocity / Time.fixedDeltaTime + OwnerBody.velocity;
         float added = RunOnce ? 1 : 0f;
         for (int i = 0; i < points.Count; ++i)

@@ -429,6 +429,7 @@ GameObject:
   - component: {fileID: 5028932074093413633}
   - component: {fileID: 7180884235890227367}
   - component: {fileID: 2141624559690462796}
+  - component: {fileID: 5626594692653553086}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -659,12 +660,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64f6a4f24a0e13a48a90d8073cc81201, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  anim: {fileID: 5626594692653553086}
   GrappleHookPrefab: {fileID: 6206303392268503657, guid: 0b40f2e2543150d44892697eb83294f9, type: 3}
   RB: {fileID: 3947029620220105959}
-  TouchingGround: 0
   TimeSpentNotColliding: 0
   UseAnimation: 0
-  armTargetPos: {x: 0, y: 0}
+--- !u!114 &5626594692653553086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6259213768008090709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14360b088f5f8054f90ab7d5f6b7a985, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Dir: 1
+  prevDir: 1
+  RB: {fileID: 3947029620220105959}
   Visual: {fileID: 7041211702926641225}
   Head: {fileID: 7538526683343862029}
   Eyes: {fileID: 827126159077522632}
@@ -677,6 +692,9 @@ MonoBehaviour:
   oldItemPos: {x: 0, y: 0}
   walkCounter: 0
   oldVelo: {x: 0, y: 0}
+  TouchingGround: 0
+  armTargetPos: {x: 0, y: 0}
+  UseAnimation: 0
 --- !u!1 &6686122012786455878
 GameObject:
   m_ObjectHideFlags: 0
