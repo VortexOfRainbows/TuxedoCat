@@ -156,14 +156,14 @@ public class Player : MonoBehaviour
         }
         if(Grapple != null)
         {
-            anim.ItemSprite.sprite = Resources.Load<Sprite>("JustYarn");
+            anim.ItemSprite.sprite = Resources.Load<Sprite>("Items/JustYarn");
         }
         else
         {
-            anim.ItemSprite.sprite = Resources.Load<Sprite>("YarnWithHook");
+            anim.ItemSprite.sprite = Resources.Load<Sprite>("Items/YarnWithHook");
         }
         RB.velocity = velo;
-        anim.PlayerAnimation();
+        anim.Animate();
     }
     public void FixedUpdate()
     {

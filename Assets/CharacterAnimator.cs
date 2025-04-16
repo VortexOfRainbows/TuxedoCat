@@ -36,7 +36,7 @@ public class CharacterAnimator : MonoBehaviour
     public Vector2 armTargetPos = Vector2.zero;
     public int UseAnimation = 0;
     public float AnimSpeed => 40f;
-    public void PlayerAnimation()
+    public void Animate()
     {
         oldItemPos = ItemSprite.transform.position;
         float veloDiff = RB.velocity.y - oldVelo.y;
