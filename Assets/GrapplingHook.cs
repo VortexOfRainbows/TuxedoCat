@@ -17,6 +17,7 @@ public class GrapplingHook : MonoBehaviour
     public float maxDist = 10;
     public float pixelsInRope = 6f;
     private int PointCount = 25;
+    private float timeAttached = 0;
     public void FixedUpdate()
     {
         transform.SetParent(null);
@@ -25,13 +26,15 @@ public class GrapplingHook : MonoBehaviour
         bool goUp = Player != null ? Player.Control.Up : false;
         bool goDown = Player != null ? Player.Control.Down : false;
         bool onWall = Player != null ? Player.TimeSpentNotColliding < 4 : false;
-        float pullSpeed = 4.5f;
-        float pushSpeed = 1f;
+        float pullSpeed = 4.7f * Mathf.Min(1, timeAttached * 2);
+        float pushSpeed = 1.5f;
         if (Attached)
         {
-            if(!AttachedPrev)
+            OwnerBody.gravityScale = 0.675f;
+            timeAttached += Time.fixedDeltaTime;
+            if (!AttachedPrev)
             {
-                OwnerBody.velocity *= 0.4f;
+                OwnerBody.velocity *= 1.1f;
                 RB.velocity *= 0.0f;
                 RB.gravityScale = 0;
             }
@@ -41,7 +44,7 @@ public class GrapplingHook : MonoBehaviour
             }
             else
             {
-                OwnerBody.velocity = new Vector2(OwnerBody.velocity.x, OwnerBody.velocity.y * 0.99f);
+                OwnerBody.velocity = new Vector2(OwnerBody.velocity.x, OwnerBody.velocity.y * 0.9875f);
             }
             Vector2 toGrapple = transform.position - Owner.transform.position;
             float origDistance = toGrapple.magnitude;
@@ -105,6 +108,7 @@ public class GrapplingHook : MonoBehaviour
             Retracting = true;
         if (Retracting)
         {
+            OwnerBody.gravityScale = 1f;
             float speed = RB.velocity.magnitude + 1f;
             if(Attached)
             {
@@ -172,6 +176,8 @@ public class GrapplingHook : MonoBehaviour
         {
             Player.UseAnimation = 0;
         }
+        if(OwnerBody != null)
+            OwnerBody.gravityScale = 1f;
     }
     public void OnTriggerStay2D(Collider2D collision)
     {

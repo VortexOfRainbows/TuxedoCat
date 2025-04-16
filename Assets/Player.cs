@@ -87,9 +87,9 @@ public class Player : MonoBehaviour
             Dir = Mathf.Sign(RB.velocity.x);
         Vector2 velo = RB.velocity;
         Vector2 targetVelocity = Vector2.zero;
-        float topSpeed = TouchingGround ? 5 : 8;
-        float inertia = TouchingGround ? 0.05f : 0.01f;
-        float jumpForce = 8.1f;
+        float topSpeed = TouchingGround ? 5 : 10;
+        float inertia = TouchingGround ? 0.05f : 0.0225f;
+        float jumpForce = 10f;
 
         if (Control.Left)
             targetVelocity.x -= topSpeed;
