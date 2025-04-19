@@ -799,7 +799,6 @@ GameObject:
   - component: {fileID: 2084140008198570445}
   - component: {fileID: 5420448532846113736}
   - component: {fileID: 3878820785033051373}
-  - component: {fileID: 9122672925507848345}
   - component: {fileID: 1026910895800463253}
   - component: {fileID: 1711570719765207210}
   m_Layer: 0
@@ -898,41 +897,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.6, y: 1.5}
   m_EdgeRadius: 0
---- !u!70 &9122672925507848345
-CapsuleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8130472645645398669}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.7, y: 1}
-  m_Direction: 0
 --- !u!114 &1026910895800463253
 MonoBehaviour:
   m_ObjectHideFlags: 0

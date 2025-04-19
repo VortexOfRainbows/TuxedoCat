@@ -40,7 +40,7 @@ public class GrapplingHook : MonoBehaviour
             }
             if(onWall)
             {
-                OwnerBody.velocity = new Vector2(Mathf.Abs(OwnerBody.velocity.x) > 3 ? OwnerBody.velocity.x * 0.5f : OwnerBody.velocity.x * 0.95f, OwnerBody.velocity.y > 0 ? OwnerBody.velocity.y * 0.5f : OwnerBody.velocity.y * 0.94f);
+                OwnerBody.velocity = new Vector2(Mathf.Abs(OwnerBody.velocity.x) > 3 ? OwnerBody.velocity.x * 0.7f : OwnerBody.velocity.x * 0.985f, OwnerBody.velocity.y > 0 ? OwnerBody.velocity.y * 0.5f : OwnerBody.velocity.y * 0.94f);
             }
             else
             {
@@ -56,26 +56,23 @@ public class GrapplingHook : MonoBehaviour
             }
             toGrapple -= OwnerBody.velocity * Time.fixedDeltaTime;
             float distance = toGrapple.magnitude;
-            if (goUp)
+            if (onWall)
+            {
+                targetLength = distance;
+            }
+            else if (goUp)
             {
                 if (origDistance < targetLength)
                     targetLength = origDistance;
                 if(Mathf.Abs(targetLength - distance) < pullSpeed * Time.fixedDeltaTime)
                     targetLength -= pullSpeed * Time.fixedDeltaTime;
             }
-            if (goDown)
+            else if (goDown)
             {
-                if(onWall)
-                {
-                    targetLength = distance;
-                }
-                else
-                {
-                    if (origDistance > targetLength)
-                        targetLength = origDistance;
-                    if(Mathf.Abs(targetLength - distance) < pushSpeed * Time.fixedDeltaTime)
-                        targetLength += pushSpeed * Time.fixedDeltaTime;
-                }
+                if (origDistance > targetLength)
+                    targetLength = origDistance;
+                if (Mathf.Abs(targetLength - distance) < pushSpeed * Time.fixedDeltaTime)
+                    targetLength += pushSpeed * Time.fixedDeltaTime;
             }
             if(toGrapple.y < 0) //Player is above the grapple
             {
