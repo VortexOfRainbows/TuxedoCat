@@ -54,7 +54,7 @@ public class CharacterAnimator : MonoBehaviour
         float walkDirection = 1f;
         //if (Entity.Velocity.y < -0.0 && MathF.Abs(Entity.Velocity.y) > 0.001f && MathF.Abs(Entity.Velocity.x) < 0.001f)
         //    walkDirection = -1;
-        float velocity = Mathf.Abs(RB.velocity.x);
+        float velocity = Mathf.Sqrt(Mathf.Abs(RB.velocity.x)) * 3f * Mathf.Sign(RB.velocity.x * Dir);
         float verticalVelo = Mathf.Abs(RB.velocity.y);
         float walkSpeedMultiplier = Mathf.Clamp(Math.Abs(velocity / 2f), 0, 1f);
         float jumpSpeedMultiplier = Mathf.Clamp(Math.Abs(verticalVelo / 3f), 0, 1f);

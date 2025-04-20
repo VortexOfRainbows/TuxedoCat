@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 288971598317992565}
   - component: {fileID: 7212791597119619593}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Eyes
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -94,9 +94,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6311156659741199297}
   - component: {fileID: 1846665655315132660}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LegLeft
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -178,9 +178,9 @@ GameObject:
   m_Component:
   - component: {fileID: 90809606814418957}
   - component: {fileID: 6176776755198876022}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ArmRight
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -262,9 +262,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4073813455021440715}
   - component: {fileID: 349277358425792704}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GroundCollider
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -339,9 +339,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6617687989405778252}
   - component: {fileID: 4573153930163357273}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ArmLeft
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -427,9 +427,9 @@ GameObject:
   - component: {fileID: 5028932074093413633}
   - component: {fileID: 2141624559690462796}
   - component: {fileID: 5626594692653553086}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -570,6 +570,9 @@ MonoBehaviour:
   TouchingGround: 0
   armTargetPos: {x: 0, y: 0}
   UseAnimation: 0
+  TargetCursor: 0
+  TargetFront: 1
+  eyeTargetPosition: {x: 0, y: 0}
 --- !u!1 &6686122012786455878
 GameObject:
   m_ObjectHideFlags: 0
@@ -580,9 +583,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1772355678847775242}
   - component: {fileID: 2474708937985823437}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Item
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -663,9 +666,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 656324073397249618}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Visual
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -698,9 +701,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4758596226529596838}
   - component: {fileID: 625074289357248016}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Body
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -785,9 +788,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6444050071665941228}
   - component: {fileID: 8443523426254712747}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Head
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -871,9 +874,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4772489631313014333}
   - component: {fileID: 8162359647037132607}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LegRight
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -955,9 +958,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2543077917549438104}
   - component: {fileID: 8573310389381502851}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Glow
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

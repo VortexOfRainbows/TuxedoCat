@@ -1,21 +1,47 @@
+using System.Net.Mail;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 
 public class Goon : MonoBehaviour
 {
     public GameObject target = null;
+    public float Alertness = 0;
     public void TryFindTarget()
     {
         float dist = 10;
         GameObject player = Player.Instance.gameObject;
-        bool hasLineOfSight = true;
+        Vector3 toPlayer = player.transform.position - transform.position;
+        toPlayer = toPlayer.normalized;
+        bool hasLineOfSight = false;
+        RaycastHit2D ray = Physics2D.Raycast(transform.position + toPlayer * 1.0f, toPlayer, dist, LayerMask.GetMask("Player", "World"));
+        if(ray.distance < dist && ray.collider != null && ray.collider.CompareTag("Player"))
+        {
+            hasLineOfSight = true;
+        }
         //do a raytrace here to check for LOS
         if(hasLineOfSight)
         {
             target = player;
+            if(Alertness < 2)
+            {
+                Alertness += Time.fixedDeltaTime;
+            }
+            else
+            {
+                Alertness = 0;
+            }
         }
         else
         {
-            target = null;
+            if (Alertness > 0)
+            {
+                Alertness -= Time.fixedDeltaTime;
+            }
+            else
+            {
+                target = null;
+                Alertness = 0;
+            }
         }
     }
     public Rigidbody2D RB => anim.RB;
@@ -32,23 +58,39 @@ public class Goon : MonoBehaviour
     }
     public void FixedUpdate()
     {
+        Vector3 targetPatrolPoint = transform.position;
         TryFindTarget();
         if(target != null)
         {
+            Vector3 toPlayer = target.transform.position - transform.position;
             anim.eyeTargetPosition = target.transform.position;
             anim.TargetFront = false;
+            anim.armTargetPos = target.transform.position;
+            targetPatrolPoint = target.transform.position;
+            Dir = Mathf.Sign(toPlayer.x);
         }
         else
         {
             anim.TargetFront = true;
+            anim.armTargetPos = Vector2.zero;
+            if (Mathf.Abs(RB.velocity.x) > 0.1f)
+                Dir = Mathf.Sign(RB.velocity.x);
         }
-        if (Mathf.Abs(RB.velocity.x) > 0.1f)
-            Dir = Mathf.Sign(RB.velocity.x);
         Vector2 velo = RB.velocity;
         Vector2 targetVelocity = Vector2.zero;
-        float topSpeed = TouchingGround ? 5 : 10;
-        float inertia = TouchingGround ? 0.05f : 0.0225f;
+        float topSpeed = TouchingGround ? 2 : 4;
+        float inertia = TouchingGround ? 0.04f : 0.02f;
         //float jumpForce = 10f;
+
+        if(transform.position != targetPatrolPoint)
+        {
+            Vector3 toPatrol = targetPatrolPoint - transform.position;
+            float distToTargetX = Mathf.Abs(toPatrol.x);
+            if(distToTargetX > 7)
+                targetVelocity.x += Mathf.Sign(toPatrol.x) * topSpeed;
+            if (distToTargetX < 4)
+                targetVelocity.x -= Mathf.Sign(toPatrol.x) * topSpeed;
+        }
 
         //if (Control.Left)
         //    targetVelocity.x -= topSpeed;
