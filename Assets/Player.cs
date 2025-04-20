@@ -142,9 +142,9 @@ public class Player : MonoBehaviour
         {
             if(StartUsingItem && UseAnimation <= 0)
                 UseAnimation++;
-            else if(IsUsingItem)
+            else if(IsUsingItem && UseAnimation < anim.AnimSpeed * 2)
                 UseAnimation++;
-            if (IsUsingItem && StartUsingItem)
+            if (IsUsingItem && (StartUsingItem || UseAnimation < anim.AnimSpeed * 2))
             {
                 Vector2 toMouse = Utils.MouseWorld - (Vector2)transform.position;
                 float percent = UseAnimation / anim.AnimSpeed;
