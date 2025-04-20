@@ -1,6 +1,9 @@
 using System;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.Android;
+using UnityEngine.Scripting;
+using UnityEngine.UIElements;
 
 public class Control
 {
@@ -74,6 +77,7 @@ public class Player : MonoBehaviour
     public static Control PrevControl { get; private set; } = new Control();
     public static Vector3 Position => Instance == null ? (Instance = FindFirstObjectByType<Player>()).transform.position : Instance.transform.position;
     public GameObject GrappleHookPrefab;
+    public GameObject LaserPtr;
     public Rigidbody2D RB;
     public int TimeSpentNotColliding = 0;
     public void Start()
@@ -205,7 +209,37 @@ public class Player : MonoBehaviour
             anim.ItemSprite.transform.localScale = Vector3.one;
             anim.ItemSprite.transform.localEulerAngles = new Vector3(0, 0, -90);
             anim.armTargetPos = Utils.MouseWorld;
-            Dir = Mathf.Sign(Utils.MouseWorld.x - transform.position.x);
+            Vector2 toMouse = Utils.MouseWorld - (Vector2)transform.position;
+            Dir = Mathf.Sign(toMouse.x);
+            LaserPtr.SetActive(true);
+            Vector2 dir = Vector2.down.RotatedBy(anim.ArmLeft.transform.eulerAngles.z * Mathf.Deg2Rad) * 0.1f;
+            RaycastHit2D ray = Physics2D.Raycast((Vector2)LaserPtr.transform.position, dir, 20, LayerMask.GetMask("World", "Goon"));
+            float newDist = ray.distance;
+            if (ray.distance > 0)
+            {
+            }
+            else
+                newDist = 20;
+            LaserPtr.transform.localScale = new Vector3(newDist, LaserPtr.transform.localScale.y);
+            //Gizmos.DrawLine((Vector2)LaserPtr.transform.position, (Vector2)LaserPtr.transform.position + toMouse.normalized * newDist);
+            if (StartUsingItem && UseAnimation <= 0)
+            {
+                UseAnimation = 20;
+                var p = Projectile.NewProjectile<Laser>(LaserPtr.transform.position, dir);
+                p.transform.localScale = new Vector3(newDist, LaserPtr.transform.localScale.y);
+                p.transform.localEulerAngles = new Vector3(0, 0, anim.ArmLeft.transform.eulerAngles.z - 90);
+                p.GetComponent<ProjComponents>().spriteRenderer.color = LaserPtr.GetComponent<SpriteRenderer>().color * 3;
+                //LaserPtr.transform.localScale = new Vector3(LaserPtr.transform.localScale.x, LaserPtr.transform.localScale.y + 0.5f);
+            }
+            else
+            {
+                UseAnimation--;
+                //LaserPtr.transform.localScale = new Vector3(LaserPtr.transform.localScale.x, Mathf.Lerp(LaserPtr.transform.lossyScale.y, 0.03125f, 0.1f));
+            }
+        }
+        else
+        {
+            LaserPtr.SetActive(false);
         }
     }
     public void OnCollisionEnter2D(Collision2D collision)

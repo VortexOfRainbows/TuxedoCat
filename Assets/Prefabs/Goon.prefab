@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7269295740203519011}
   - component: {fileID: 6852919085958201122}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6264718003936254478}
   - component: {fileID: 3202371861896077736}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Eyes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,7 +177,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 543404280277812839}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -212,7 +212,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3702340557978068952}
   - component: {fileID: 8505069970774498830}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: LegRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -296,7 +296,7 @@ GameObject:
   m_Component:
   - component: {fileID: 795009402621177200}
   - component: {fileID: 3041628864601532155}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -382,7 +382,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5081350179816892519}
   - component: {fileID: 7722345825958120131}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Item
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -466,7 +466,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1583354389373315008}
   - component: {fileID: 8018858753106463031}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: GroundCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -543,7 +543,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6039878869886766911}
   - component: {fileID: 4641006069479993005}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: LegLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -627,7 +627,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8404688550940963692}
   - component: {fileID: 2610651727588504328}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ArmRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -711,7 +711,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3511076564557721606}
   - component: {fileID: 5079966652557326128}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -801,7 +801,7 @@ GameObject:
   - component: {fileID: 3878820785033051373}
   - component: {fileID: 1026910895800463253}
   - component: {fileID: 1711570719765207210}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Goon
   m_TagString: Standable
   m_Icon: {fileID: 0}
@@ -925,6 +925,7 @@ MonoBehaviour:
   oldItemPos: {x: 0, y: 0}
   walkCounter: 0
   oldVelo: {x: 0, y: 0}
+  prevTouchingGround: 0
   TouchingGround: 0
   armTargetPos: {x: 0, y: 0}
   UseAnimation: 0
@@ -956,7 +957,7 @@ GameObject:
   m_Component:
   - component: {fileID: 730106526443969083}
   - component: {fileID: 7686660400765610661}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ArmLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}

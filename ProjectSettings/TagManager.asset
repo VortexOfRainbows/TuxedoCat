@@ -6,6 +6,7 @@ TagManager:
   tags:
   - World
   - Standable
+  - Projectile
   layers:
   - Default
   - TransparentFX
@@ -14,8 +15,8 @@ TagManager:
   - Water
   - UI
   - Player
-  - 
-  - 
+  - Goon
+  - Projectile
   - 
   - 
   - 
