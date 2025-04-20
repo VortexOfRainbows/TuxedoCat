@@ -32,6 +32,7 @@ public class CharacterAnimator : MonoBehaviour
     public Vector2 oldItemPos;
     public float walkCounter = 0;
     public Vector2 oldVelo = Vector2.zero;
+    public bool prevTouchingGround = false;
     public bool TouchingGround = false;
     public Vector2 armTargetPos = Vector2.zero;
     public int UseAnimation = 0;

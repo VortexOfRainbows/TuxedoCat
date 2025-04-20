@@ -56,11 +56,9 @@ public class GrapplingHook : MonoBehaviour
             }
             toGrapple -= OwnerBody.velocity * Time.fixedDeltaTime;
             float distance = toGrapple.magnitude;
-            if (onWall)
-            {
+            if (Player != null && Player.anim.prevTouchingGround)
                 targetLength = distance;
-            }
-            else if (goUp)
+            if (goUp)
             {
                 if (origDistance < targetLength)
                     targetLength = origDistance;
@@ -69,10 +67,15 @@ public class GrapplingHook : MonoBehaviour
             }
             else if (goDown)
             {
-                if (origDistance > targetLength)
-                    targetLength = origDistance;
-                if (Mathf.Abs(targetLength - distance) < pushSpeed * Time.fixedDeltaTime)
-                    targetLength += pushSpeed * Time.fixedDeltaTime;
+                if (onWall)
+                    targetLength = distance;
+                else
+                {
+                    if (origDistance > targetLength)
+                        targetLength = origDistance;
+                    if (Mathf.Abs(targetLength - distance) < pushSpeed * Time.fixedDeltaTime)
+                        targetLength += pushSpeed * Time.fixedDeltaTime;
+                }
             }
             if(toGrapple.y < 0) //Player is above the grapple
             {
