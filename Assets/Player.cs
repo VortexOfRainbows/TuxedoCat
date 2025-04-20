@@ -116,7 +116,6 @@ public class Player : MonoBehaviour
         }
 
         RB.velocity = velo;
-        anim.Animate();
     }
     public void FixedUpdate()
     {
@@ -124,6 +123,7 @@ public class Player : MonoBehaviour
         Control.ControlUpdate();
         MovementUpdate();
         ItemUpdate();
+        anim.Animate();
         anim.prevTouchingGround = TouchingGround;
         TouchingGround = false;
         TimeSpentNotColliding++;
@@ -196,10 +196,16 @@ public class Player : MonoBehaviour
             {
                 anim.ItemSprite.sprite = Resources.Load<Sprite>("Items/YarnWithHook");
             }
+            anim.ItemSprite.transform.localScale = Vector3.one * 0.6f;
+            anim.ItemSprite.transform.localEulerAngles = new Vector3(0, 0, 0);
         }
-        if(ItemType == 1)
+        if (ItemType == 1)
         {
-            anim.ItemSprite.sprite = null;
+            anim.ItemSprite.sprite = Resources.Load<Sprite>("Items/LaserPointerGun");
+            anim.ItemSprite.transform.localScale = Vector3.one;
+            anim.ItemSprite.transform.localEulerAngles = new Vector3(0, 0, -90);
+            anim.armTargetPos = Utils.MouseWorld;
+            Dir = Mathf.Sign(Utils.MouseWorld.x - transform.position.x);
         }
     }
     public void OnCollisionEnter2D(Collision2D collision)
