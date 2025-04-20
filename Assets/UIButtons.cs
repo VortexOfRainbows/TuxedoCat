@@ -9,7 +9,9 @@ public class UIButtons : MonoBehaviour
     public static bool gamePaused = false;
     public GameObject pauseMenuUI;
     public GameObject dimBG;
-    public GameObject pauseButton;
+    public GameObject settingsMenu;
+    public GameObject inventoryMenu;
+    //public GameObject pauseButton;
     public static Vector3 Scale;
 
     // Start is called before the first frame update
@@ -27,6 +29,15 @@ public class UIButtons : MonoBehaviour
             if (gamePaused)
             {
                 Resume();
+                if(settingsMenu.activeSelf)
+                {
+                    settingsMenu.SetActive(false);
+                }
+                Resume();
+                if (inventoryMenu.activeSelf)
+                {
+                    inventoryMenu.SetActive(false);
+                }
             }
             else
             {
@@ -39,7 +50,7 @@ public class UIButtons : MonoBehaviour
     {
         dimBG.SetActive(false);
         pauseMenuUI.SetActive(false);
-        pauseButton.SetActive(true);
+        //pauseButton.SetActive(true);
         Time.timeScale = 1f;
         gamePaused = false;
     }
@@ -48,7 +59,7 @@ public class UIButtons : MonoBehaviour
     {
         dimBG.SetActive(true);
         pauseMenuUI.SetActive(true);
-        pauseButton.SetActive(false);
+        //pauseButton.SetActive(false);
         Time.timeScale = 0f;
         gamePaused = true;
     }
