@@ -49,6 +49,11 @@ public abstract class Projectile : MonoBehaviour
         }
         if (collision.gameObject.layer == 6 && Hostile) //if it is a player
         {
+            Player p = collision.gameObject.GetComponent<Player>();
+            if (p != null && Penetrate > 0)
+            {
+                p.Hurt(1);
+            }
             Kill();
         }
         if(TileCollide && collision.gameObject.layer == 3) //collide with world

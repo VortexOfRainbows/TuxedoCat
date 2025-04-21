@@ -932,6 +932,7 @@ MonoBehaviour:
   TargetCursor: 0
   TargetFront: 1
   eyeTargetPosition: {x: 0, y: 0}
+  useRecoil: 0
 --- !u!114 &1711570719765207210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -944,9 +945,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02d7dc24260fc46429546b841ae6b055, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  color: {r: 1, g: 1, b: 1, a: 1}
   target: {fileID: 0}
   Alertness: 0
+  life: 7
+  hurtTimer: 0
   anim: {fileID: 1026910895800463253}
+  shootCounter: 0
 --- !u!1 &8718358116955546467
 GameObject:
   m_ObjectHideFlags: 0

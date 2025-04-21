@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -36,6 +37,12 @@ public class Control
 }
 public class Player : MonoBehaviour
 {
+    public void Hurt(int damage = 1)
+    {
+        regen = 0;
+        life -= damage;
+    }
+    public int life = 9;
     public CharacterAnimator anim;
     public bool TouchingGround {
         get => anim.TouchingGround;
@@ -124,6 +131,19 @@ public class Player : MonoBehaviour
         Control.ControlUpdate();
         MovementUpdate();
         ItemUpdate();
+        if(life < 9)
+        {
+            regen += Time.fixedDeltaTime;
+            if(regen > 5)
+            {
+                life++;
+                regen = 0;
+            }
+        }
+        if(life < 1)
+        {
+            life = 1; //For now, stay at one life since we dont have death support
+        }
         anim.Animate();
         anim.prevTouchingGround = TouchingGround;
         TouchingGround = false;
@@ -132,6 +152,7 @@ public class Player : MonoBehaviour
         Camera.main.transform.position = new Vector3(lerp.x, lerp.y, -10);
     }
     public int ItemType = 0;
+    public float regen = 0;
     public void ItemUpdate()
     {
         if(Control.SwapItem && !PrevControl.SwapItem && !IsUsingItem)

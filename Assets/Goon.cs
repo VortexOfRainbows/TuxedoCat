@@ -26,17 +26,17 @@ public class Goon : MonoBehaviour
         }
         for (int i = 0; i < 7; ++i)
         {
-            GameObject g = Projectile.NewProjectile<Cheese>(anim.ItemSprite.transform.position, Utils.RandCircle(3) + Vector2.up * 5);
-            g.GetComponent<ProjComponents>().rb.gravityScale = 0.5f;
+            GameObject g = Projectile.NewProjectile<Cheese>(anim.ItemSprite.transform.position, Utils.RandCircle(3) + Vector2.up * 3);
+            g.GetComponent<ProjComponents>().rb.gravityScale = Utils.RandFloat(0.3f, 0.5f);
             g.GetComponent<Projectile>().Hostile = false;
-            g.transform.localScale *= 0.7f;
+            g.transform.localScale *= Utils.RandFloat(0.7f, 1.05f);
         }
         Destroy(gameObject);
     }
     public Color color = Color.white;
     public GameObject target = null;
     public float Alertness = 0;
-    public int life = 5;
+    public int life = 7;
     public float hurtTimer = 0;
     public void Hurt(int damage)
     {
@@ -118,7 +118,7 @@ public class Goon : MonoBehaviour
             shootCounter++;
             if(shootCounter > 120)
             {
-                shootCounter = 0;
+                shootCounter = -Utils.RandInt(41);
                 toPlayer.y += Mathf.Abs(toPlayer.magnitude) * 0.125f;
                 Projectile.NewProjectile<Cheese>(anim.ItemSprite.transform.position + toPlayer * 0.5f, toPlayer * 8);
                 anim.useRecoil += 30;
