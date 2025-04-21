@@ -13,13 +13,16 @@ public class Goon : MonoBehaviour
             if (sr != anim.ItemSprite)
                 sr.color = Color.white;
         }
-        Debug.Log("I DIE");
         anim.LegLeft.AddComponent<Gore>();
         anim.ArmRight.AddComponent<Gore>();
         anim.ArmLeft.AddComponent<Gore>();
         anim.LegRight.AddComponent<Gore>();
         anim.Body.AddComponent<Gore>();
         anim.Head.AddComponent<Gore>();
+        for(int i = 0; i < 30; ++i)
+        {
+            ParticleManager.NewParticle(transform.position, Utils.RandFloat(1f, 2f), RB.velocity * Utils.RandFloat(0.5f, 2f), 5f, Utils.RandFloat(4f, 5f), 1);
+        }
         Destroy(gameObject);
     }
     public Color color = Color.white;
@@ -32,6 +35,8 @@ public class Goon : MonoBehaviour
         life -= damage;
         Alertness += 0.5f;
         hurtTimer = 10;
+        for (int i = 0; i < 3; ++i)
+            ParticleManager.NewParticle(transform.position, 1, RB.velocity * Utils.RandFloat(0.5f, 1f), 4f, Utils.RandFloat(2f, 3f), 1);
         if(life <= 0 && !dead)
         {
             Die();

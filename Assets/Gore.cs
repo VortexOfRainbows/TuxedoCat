@@ -29,9 +29,9 @@ public class Gore : MonoBehaviour
         RB.velocity = new Vector2(RB.velocity.x * 0.98f, RB.velocity.y);
         RB.rotation += RB.velocity.x * 2;
         timer++;
-        if(timer > 250)
+        if(timer > 150)
         {
-            float percent = 1 - (timer - 250) / 200f;
+            float percent = 1 - (timer - 150) / 150f;
             //r.color = new Color(r.color.r, r.color.g, r.color.b, percent);
             foreach (SpriteRenderer r2 in GetComponentsInChildren<SpriteRenderer>())
                 r2.color = new Color(r2.color.r, r2.color.g, r2.color.b, percent);
