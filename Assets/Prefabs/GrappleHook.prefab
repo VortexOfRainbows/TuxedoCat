@@ -146,9 +146,9 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.1, y: 0}
+  m_Offset: {x: 0.15, y: 0}
   serializedVersion: 2
-  m_Radius: 0.3
+  m_Radius: 0.35
 --- !u!114 &8118298381779056293
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -161,6 +161,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ece6cdb24b15c844b93015bab906ed6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Player: {fileID: 0}
+  Owner: {fileID: 0}
+  OwnerBody: {fileID: 0}
   GrapplePointPrefab: {fileID: 933802254669875285, guid: 8d5a459020242df42bd327ea46d6731d, type: 3}
   RB: {fileID: 6527776340979504533}
   points: []
@@ -170,3 +173,4 @@ MonoBehaviour:
   targetLength: 0
   minDist: 0.65
   maxDist: 10
+  pixelsInRope: 6

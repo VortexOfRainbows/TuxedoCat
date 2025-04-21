@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -37,8 +36,11 @@ public class Control
 }
 public class Player : MonoBehaviour
 {
+    public float hurtTimer = 0;
+    private Color color = Color.white;
     public void Hurt(int damage = 1)
     {
+        hurtTimer = 10;
         regen = 0;
         life -= damage;
     }
@@ -150,6 +152,15 @@ public class Player : MonoBehaviour
         TimeSpentNotColliding++;
         Vector2 lerp = Vector2.Lerp(Camera.main.transform.position, Player.Position, 0.1f);
         Camera.main.transform.position = new Vector3(lerp.x, lerp.y, -10);
+        if (--hurtTimer >= 0)
+            color = Color.Lerp(color, Color.red, 0.12f);
+        else
+            color = Color.Lerp(color, Color.white, 0.15f);
+        foreach (SpriteRenderer sr in gameObject.GetComponentsInChildren<SpriteRenderer>())
+        {
+            if (sr != anim.ItemSprite && sr.gameObject != LaserPtr)
+                sr.color = color;
+        }
     }
     public int ItemType = 0;
     public float regen = 0;

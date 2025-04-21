@@ -37,6 +37,10 @@ public class GrapplingHook : MonoBehaviour
                 OwnerBody.velocity *= 1.1f;
                 RB.velocity *= 0.0f;
                 RB.gravityScale = 0;
+                if(Player.Instance.UseAnimation < Player.Instance.anim.AnimSpeed * 2)
+                {
+                    Player.Instance.UseAnimation = (int)(Player.Instance.anim.AnimSpeed) * 2;
+                }
             }
             if(onWall)
             {
