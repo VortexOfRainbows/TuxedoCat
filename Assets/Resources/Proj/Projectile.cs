@@ -37,7 +37,15 @@ public abstract class Projectile : MonoBehaviour
     }
     public void OnTriggerStay2D(Collider2D collision)
     {
-
+        if(collision.gameObject.layer == 7) //if it is an enemy
+        {
+            Goon goon = collision.gameObject.GetComponent<Goon>();
+            if(goon != null && Penetrate >= 0)
+            {
+                --Penetrate;
+                goon.Hurt(1);
+            }
+        }
     }
     public virtual void Init()
     {
@@ -61,12 +69,12 @@ public class Laser : Projectile
 {
     public override void Init()
     {
-
+        cmp.c2D.offset = new Vector2(1, 0);
     }
     public override void AI()
     {
         ++timer;
-        if (timer <= 10)
+        if (timer <= 11)
         {
             transform.localScale = new Vector3(transform.localScale.x, Mathf.Lerp(transform.localScale.y, 0.335f, 0.16f), 1);
         }

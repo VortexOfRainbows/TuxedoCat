@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Android;
 using UnityEngine.Scripting;
 using UnityEngine.UIElements;
+using static Unity.Burst.Intrinsics.X86.Avx;
 
 public class Control
 {
@@ -229,6 +230,7 @@ public class Player : MonoBehaviour
                 p.transform.localScale = new Vector3(newDist, LaserPtr.transform.localScale.y);
                 p.transform.localEulerAngles = new Vector3(0, 0, anim.ArmLeft.transform.eulerAngles.z - 90);
                 p.GetComponent<ProjComponents>().spriteRenderer.color = LaserPtr.GetComponent<SpriteRenderer>().color * 3;
+                p.GetComponent<ProjComponents>().c2D.radius = 0.2f / newDist;
                 //LaserPtr.transform.localScale = new Vector3(LaserPtr.transform.localScale.x, LaserPtr.transform.localScale.y + 0.5f);
             }
             else

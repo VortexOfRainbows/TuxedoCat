@@ -4,8 +4,20 @@ using UnityEngine.Experimental.Rendering;
 
 public class Goon : MonoBehaviour
 {
+    public Color color = Color.white;
     public GameObject target = null;
     public float Alertness = 0;
+    public int life = 5;
+    public float hurtTimer = 0;
+    public void Hurt(int damage)
+    {
+        life -= damage;
+        hurtTimer = 10;
+        if(life <= 0)
+        {
+            Debug.Log("I DIE");
+        }
+    }
     public void TryFindTarget()
     {
         float dist = 10;
@@ -106,5 +118,16 @@ public class Goon : MonoBehaviour
         }
         RB.velocity = velo;
         anim.Animate();
+
+        if(--hurtTimer >= 0)
+            color = Color.Lerp(color, Color.red, 0.12f);
+        else
+            color = Color.Lerp(color, Color.white, 0.15f);
+
+        foreach (SpriteRenderer sr in gameObject.GetComponentsInChildren<SpriteRenderer>())
+        {
+            if(sr != anim.ItemSprite)
+                sr.color = color;
+        }
     }
 }
