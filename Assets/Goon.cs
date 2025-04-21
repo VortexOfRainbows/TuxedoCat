@@ -19,9 +19,17 @@ public class Goon : MonoBehaviour
         anim.LegRight.AddComponent<Gore>();
         anim.Body.AddComponent<Gore>();
         anim.Head.AddComponent<Gore>();
+        anim.Eyes.SetActive(false);
         for(int i = 0; i < 30; ++i)
         {
             ParticleManager.NewParticle(transform.position, Utils.RandFloat(1f, 2f), RB.velocity * Utils.RandFloat(0.5f, 2f), 5f, Utils.RandFloat(4f, 5f), 1);
+        }
+        for (int i = 0; i < 7; ++i)
+        {
+            GameObject g = Projectile.NewProjectile<Cheese>(anim.ItemSprite.transform.position, Utils.RandCircle(3) + Vector2.up * 5);
+            g.GetComponent<ProjComponents>().rb.gravityScale = 0.5f;
+            g.GetComponent<Projectile>().Hostile = false;
+            g.transform.localScale *= 0.7f;
         }
         Destroy(gameObject);
     }
@@ -92,6 +100,7 @@ public class Goon : MonoBehaviour
         get => anim.TouchingGround;
         set => anim.TouchingGround = value;
     }
+    public int shootCounter = 0;
     public void FixedUpdate()
     {
         if (dead)
@@ -100,15 +109,24 @@ public class Goon : MonoBehaviour
         TryFindTarget();
         if(target != null)
         {
-            Vector3 toPlayer = target.transform.position - transform.position;
+            Vector3 toPlayer = (target.transform.position - transform.position).normalized;
             anim.eyeTargetPosition = target.transform.position;
             anim.TargetFront = false;
             anim.armTargetPos = target.transform.position;
             targetPatrolPoint = target.transform.position;
             Dir = Mathf.Sign(toPlayer.x);
+            shootCounter++;
+            if(shootCounter > 120)
+            {
+                shootCounter = 0;
+                toPlayer.y += Mathf.Abs(toPlayer.magnitude) * 0.125f;
+                Projectile.NewProjectile<Cheese>(anim.ItemSprite.transform.position + toPlayer * 0.5f, toPlayer * 8);
+                anim.useRecoil += 30;
+            }
         }
         else
         {
+            shootCounter = 0;
             anim.TargetFront = true;
             anim.armTargetPos = Vector2.zero;
             if (Mathf.Abs(RB.velocity.x) > 0.1f)

@@ -15,6 +15,7 @@ public abstract class Projectile : MonoBehaviour
     public bool Friendly = false;
     private bool Dead = false;
     public bool Hostile = false;
+    public bool TileCollide = false;
     public Vector2 startPos = Vector2.zero;
     public static GameObject NewProjectile<T>(Vector2 pos, Vector2 velo, params float[] data) where T : Projectile
     {
@@ -37,7 +38,7 @@ public abstract class Projectile : MonoBehaviour
     }
     public void OnTriggerStay2D(Collider2D collision)
     {
-        if(collision.gameObject.layer == 7) //if it is an enemy
+        if(collision.gameObject.layer == 7 && Friendly) //if it is an enemy
         {
             Goon goon = collision.gameObject.GetComponent<Goon>();
             if(goon != null && Penetrate > 0)
@@ -45,6 +46,14 @@ public abstract class Projectile : MonoBehaviour
                 --Penetrate;
                 goon.Hurt(1);
             }
+        }
+        if (collision.gameObject.layer == 6 && Hostile) //if it is a player
+        {
+            Kill();
+        }
+        if(TileCollide && collision.gameObject.layer == 3) //collide with world
+        {
+            Kill();
         }
     }
     public virtual void Init()
@@ -70,6 +79,9 @@ public class Laser : Projectile
     public override void Init()
     {
         cmp.c2D.offset = new Vector2(1, 0);
+        cmp.spriteRenderer.material = Resources.Load<Material>("Additive");
+        Friendly = true;
+        Hostile = false;
     }
     public void SpawnParticles()
     {
@@ -118,5 +130,41 @@ public class Laser : Projectile
     public override void OnKill()
     {
 
+    }
+}
+
+public class Cheese : Projectile
+{
+    public override void Init()
+    {
+        transform.localScale *= 0.7f;
+        cmp.c2D.radius *= 0.8f;
+        cmp.c2D.offset = new Vector2(0, 0);
+        cmp.spriteRenderer.sprite = Resources.Load<Sprite>("Proj/Cheese");
+        Friendly = false;
+        Hostile = true;
+        TileCollide = true;
+        RB.gravityScale = 0.1f;
+        AI();
+        for (int i = 0; i < 15; ++i)
+        {
+            ParticleManager.NewParticle(transform.position, Utils.RandFloat(0.6f, 1.2f), RB.velocity * Utils.RandFloat(0.5f, 1.5f) + Vector2.up, 2f, Utils.RandFloat(0.7f, 1f), 1);
+        }
+    }
+    public override void AI()
+    {
+        RB.rotation = Mathf.Rad2Deg * RB.velocity.ToRotation();
+        cmp.spriteRenderer.flipY = RB.velocity.x < 0;
+        if(Utils.RandFloat() < 0.2f)
+        {
+            ParticleManager.NewParticle(transform.position, Utils.RandFloat(0.5f, 1.1f), (RB.velocity + Vector2.up) * Utils.RandFloat(0.5f), 1f, Utils.RandFloat(0.6f, 0.7f), 1);
+        }
+    }
+    public override void OnKill()
+    {
+        for (int i = 0; i < 25; ++i)
+        {
+            ParticleManager.NewParticle(transform.position, Utils.RandFloat(0.6f, 1.2f), RB.velocity * Utils.RandFloat(-0.25f, 0.9f) + Vector2.up, 1.5f, Utils.RandFloat(0.7f, 1f), 1);
+        }
     }
 }
