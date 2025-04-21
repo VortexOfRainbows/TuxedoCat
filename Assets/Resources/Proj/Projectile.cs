@@ -71,8 +71,32 @@ public class Laser : Projectile
     {
         cmp.c2D.offset = new Vector2(1, 0);
     }
+    public void SpawnParticles()
+    {
+        Color c = cmp.spriteRenderer.color * 1.5f;
+        Vector2 destination = new Vector2(Data[0], Data[1]);
+        Vector2 toDest = destination - (Vector2)transform.position;
+        float scaleX = toDest.magnitude;
+        for (int j = 0; j < 12; ++j)
+        {
+            ParticleManager.NewParticle(transform.position, Utils.RandFloat(0.5f, 1f), RB.velocity * Utils.RandFloat(1f, 10f), 1.5f, Utils.RandFloat(0.45f, 0.6f), 0, c);
+        }
+        for (float i = 0; i < scaleX; i += 0.2f)
+        {
+            Vector2 inBetween = Vector2.Lerp(transform.position, destination, i / scaleX);
+            ParticleManager.NewParticle(inBetween, Utils.RandFloat(0.45f, 0.85f), RB.velocity * Utils.RandFloat(0.1f, 0.7f), 2.7f, Utils.RandFloat(0.3f, 0.45f), 0, c);
+        }
+        for (int j = 0; j < 20; ++j)
+        {
+            ParticleManager.NewParticle(destination, Utils.RandFloat(0.5f, 1f), RB.velocity * Utils.RandFloat(0.5f, 2f), 3f, Utils.RandFloat(0.45f, 0.6f), 0, c);
+        }
+    }
     public override void AI()
     {
+        if(timer == 0)
+        {
+            SpawnParticles();
+        }
         ++timer;
         if (timer <= 11)
         {

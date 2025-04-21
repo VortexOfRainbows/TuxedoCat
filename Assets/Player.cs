@@ -213,7 +213,7 @@ public class Player : MonoBehaviour
             Vector2 toMouse = Utils.MouseWorld - (Vector2)transform.position;
             Dir = Mathf.Sign(toMouse.x);
             LaserPtr.SetActive(true);
-            Vector2 dir = Vector2.down.RotatedBy(anim.ArmLeft.transform.eulerAngles.z * Mathf.Deg2Rad) * 0.1f;
+            Vector2 dir = Vector2.down.RotatedBy(anim.ArmLeft.transform.eulerAngles.z * Mathf.Deg2Rad);
             RaycastHit2D ray = Physics2D.Raycast((Vector2)LaserPtr.transform.position, dir, 20, LayerMask.GetMask("World", "Goon"));
             float newDist = ray.distance;
             if (ray.distance > 0)
@@ -225,8 +225,9 @@ public class Player : MonoBehaviour
             //Gizmos.DrawLine((Vector2)LaserPtr.transform.position, (Vector2)LaserPtr.transform.position + toMouse.normalized * newDist);
             if (StartUsingItem && UseAnimation <= 0)
             {
+                Vector2 end = ray.distance > 0 ? ray.point : (Vector2)LaserPtr.transform.position + dir * newDist;
                 UseAnimation = 20;
-                var p = Projectile.NewProjectile<Laser>(LaserPtr.transform.position, dir);
+                var p = Projectile.NewProjectile<Laser>(LaserPtr.transform.position, dir, end.x, end.y);
                 p.transform.localScale = new Vector3(newDist, LaserPtr.transform.localScale.y);
                 p.transform.localEulerAngles = new Vector3(0, 0, anim.ArmLeft.transform.eulerAngles.z - 90);
                 p.GetComponent<ProjComponents>().spriteRenderer.color = LaserPtr.GetComponent<SpriteRenderer>().color * 3;
