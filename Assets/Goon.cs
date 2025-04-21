@@ -4,6 +4,24 @@ using UnityEngine.Experimental.Rendering;
 
 public class Goon : MonoBehaviour
 {
+    private bool dead = false;
+    public void Die()
+    {
+        dead = true;
+        foreach (SpriteRenderer sr in gameObject.GetComponentsInChildren<SpriteRenderer>())
+        {
+            if (sr != anim.ItemSprite)
+                sr.color = Color.white;
+        }
+        Debug.Log("I DIE");
+        anim.LegLeft.AddComponent<Gore>();
+        anim.ArmRight.AddComponent<Gore>();
+        anim.ArmLeft.AddComponent<Gore>();
+        anim.LegRight.AddComponent<Gore>();
+        anim.Body.AddComponent<Gore>();
+        anim.Head.AddComponent<Gore>();
+        Destroy(gameObject);
+    }
     public Color color = Color.white;
     public GameObject target = null;
     public float Alertness = 0;
@@ -14,9 +32,9 @@ public class Goon : MonoBehaviour
         life -= damage;
         Alertness += 0.5f;
         hurtTimer = 10;
-        if(life <= 0)
+        if(life <= 0 && !dead)
         {
-            Debug.Log("I DIE");
+            Die();
         }
     }
     public void TryFindTarget()
@@ -71,6 +89,8 @@ public class Goon : MonoBehaviour
     }
     public void FixedUpdate()
     {
+        if (dead)
+            return;
         Vector3 targetPatrolPoint = transform.position;
         TryFindTarget();
         if(target != null)

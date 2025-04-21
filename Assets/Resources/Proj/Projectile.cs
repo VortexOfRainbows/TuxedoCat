@@ -40,7 +40,7 @@ public abstract class Projectile : MonoBehaviour
         if(collision.gameObject.layer == 7) //if it is an enemy
         {
             Goon goon = collision.gameObject.GetComponent<Goon>();
-            if(goon != null && Penetrate >= 0)
+            if(goon != null && Penetrate > 0)
             {
                 --Penetrate;
                 goon.Hurt(1);
