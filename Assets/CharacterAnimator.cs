@@ -40,6 +40,7 @@ public class CharacterAnimator : MonoBehaviour
     public bool TargetCursor =  false;
     public bool TargetFront = true;
     public Vector2 eyeTargetPosition = Vector2.zero;
+    public float useRecoil = 0;
     public void Animate()
     {
         oldItemPos = ItemSprite.transform.position;
@@ -109,8 +110,9 @@ public class CharacterAnimator : MonoBehaviour
         {
             Vector2 toHook = armTargetPos - (Vector2)ArmLeft.transform.position;
             toHook.x *= Dir;
-            ArmLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z, toHook.ToRotation() * Mathf.Rad2Deg + 90f, prevDir != Dir ? 1 : 0.1f);
+            ArmLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z, toHook.ToRotation() * Mathf.Rad2Deg + 90f + useRecoil, prevDir != Dir ? 1 : 0.1f);
         }
+        useRecoil *= 0.9f;
         if(TargetCursor)
             eyeTargetPosition = Utils.MouseWorld;
         else if(TargetFront)

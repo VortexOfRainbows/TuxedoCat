@@ -12,6 +12,7 @@ public class Goon : MonoBehaviour
     public void Hurt(int damage)
     {
         life -= damage;
+        Alertness += 0.5f;
         hurtTimer = 10;
         if(life <= 0)
         {

@@ -84,7 +84,7 @@ public class Laser : Projectile
         for (float i = 0; i < scaleX; i += 0.2f)
         {
             Vector2 inBetween = Vector2.Lerp(transform.position, destination, i / scaleX);
-            ParticleManager.NewParticle(inBetween, Utils.RandFloat(0.45f, 0.85f), RB.velocity * Utils.RandFloat(0.1f, 0.7f), 2.7f, Utils.RandFloat(0.3f, 0.45f), 0, c);
+            ParticleManager.NewParticle(inBetween, Utils.RandFloat(0.5f, 0.1f), RB.velocity * Utils.RandFloat(0.1f, 0.7f), 3f, Utils.RandFloat(0.4f, 0.5f), 0, c);
         }
         for (int j = 0; j < 20; ++j)
         {
