@@ -166,16 +166,16 @@ public class Player : MonoBehaviour
     public float regen = 0;
     public void ItemUpdate()
     {
-        if(Control.SwapItem && !PrevControl.SwapItem && !IsUsingItem)
+        if (Control.SwapItem && !PrevControl.SwapItem && !IsUsingItem)
         {
             ItemType++;
             ItemType %= 2;
         }
         if (ItemType == 0)
         {
-            if(StartUsingItem && UseAnimation <= 0)
+            if (StartUsingItem && UseAnimation <= 0)
                 UseAnimation++;
-            else if(IsUsingItem && UseAnimation < anim.AnimSpeed * 2)
+            else if (IsUsingItem && UseAnimation < anim.AnimSpeed * 2)
                 UseAnimation++;
             if (IsUsingItem && (StartUsingItem || UseAnimation < anim.AnimSpeed * 2))
             {
@@ -243,12 +243,16 @@ public class Player : MonoBehaviour
             LaserPtr.SetActive(true);
             Vector2 dir = Vector2.down.RotatedBy(anim.ArmLeft.transform.eulerAngles.z * Mathf.Deg2Rad);
             RaycastHit2D ray = Physics2D.Raycast((Vector2)LaserPtr.transform.position, dir, 20, LayerMask.GetMask("World", "Goon"));
-            float newDist = ray.distance;
-            if (ray.distance > 0)
+            RaycastHit2D ray2 = Physics2D.Raycast((Vector2)LaserPtr.transform.position - dir * 0.5f, dir, 20, LayerMask.GetMask("World", "Goon"));
+            float newDist = 20;
+            if (ray2.distance < ray.distance || ray.distance == 0)
             {
+                newDist = ray2.distance - 0.5f;
             }
-            else
-                newDist = 20;
+            else if (ray.distance > 0)
+            {
+                newDist = ray.distance;
+            }
             LaserPtr.transform.localScale = new Vector3(newDist, LaserPtr.transform.localScale.y);
             //Gizmos.DrawLine((Vector2)LaserPtr.transform.position, (Vector2)LaserPtr.transform.position + toMouse.normalized * newDist);
             if (StartUsingItem && UseAnimation <= 0)
@@ -259,13 +263,14 @@ public class Player : MonoBehaviour
                 }
                 else
                 {
-                    Vector2 end = ray.distance > 0 ? ray.point : (Vector2)LaserPtr.transform.position + dir * newDist;
+                    Vector2 end = ray.distance > 0 ? ray.point : ray2.distance > 0 ? ray2.point : (Vector2)LaserPtr.transform.position + dir * newDist;
                     UseAnimation = 25;
                     var p = Projectile.NewProjectile<Laser>(LaserPtr.transform.position, dir, end.x, end.y);
                     p.transform.localScale = new Vector3(newDist, LaserPtr.transform.localScale.y);
                     p.transform.localEulerAngles = new Vector3(0, 0, anim.ArmLeft.transform.eulerAngles.z - 90);
                     p.GetComponent<ProjComponents>().spriteRenderer.color = LaserPtr.GetComponent<SpriteRenderer>().color * 3;
-                    p.GetComponent<ProjComponents>().c2D.radius = 0.2f / newDist;
+                    Debug.Log(newDist);
+                    p.GetComponent<ProjComponents>().c2D.radius = Mathf.Abs(0.35f / newDist);
                     anim.useRecoil += 10 + Utils.RandFloat(20);
                     if (anim.useRecoil > 10)
                         anim.useRecoil *= 1.1f;
