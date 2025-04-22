@@ -104,10 +104,13 @@ public class Player : MonoBehaviour
         float inertia = TouchingGround ? 0.05f : 0.0225f;
         float jumpForce = 11f;
 
-        if (Control.Left)
-            targetVelocity.x -= topSpeed;
-        if (Control.Right)
-            targetVelocity.x += topSpeed;
+        if(!CheeseSpider.Active)
+        {
+            if (Control.Left)
+                targetVelocity.x -= topSpeed;
+            if (Control.Right)
+                targetVelocity.x += topSpeed;
+        }
 
         if (TouchingGround)
             velo.x = Mathf.Lerp(velo.x, targetVelocity.x, inertia);
@@ -118,11 +121,14 @@ public class Player : MonoBehaviour
         }
 
 
-        if (Control.Up && TouchingGround)
+        if (!CheeseSpider.Active)
         {
-            velo.y *= 0.1f;
-            velo.y += jumpForce;
-            TouchingGround = true;
+            if (Control.Up && TouchingGround)
+            {
+                velo.y *= 0.1f;
+                velo.y += jumpForce;
+                TouchingGround = false;
+            }
         }
 
         RB.velocity = velo;
@@ -150,8 +156,11 @@ public class Player : MonoBehaviour
         anim.prevTouchingGround = TouchingGround;
         TouchingGround = false;
         TimeSpentNotColliding++;
-        Vector2 lerp = Vector2.Lerp(Camera.main.transform.position, Player.Position, 0.1f);
-        Camera.main.transform.position = new Vector3(lerp.x, lerp.y, -10);
+        if(!CheeseSpider.Active)
+        {
+            Vector2 lerp = Vector2.Lerp(Camera.main.transform.position, Player.Position, 0.1f);
+            Camera.main.transform.position = new Vector3(lerp.x, lerp.y, -10);
+        }
         if (--hurtTimer >= 0)
             color = Color.Lerp(color, Color.red, 0.12f);
         else
@@ -166,6 +175,8 @@ public class Player : MonoBehaviour
     public float regen = 0;
     public void ItemUpdate()
     {
+        if (CheeseSpider.Active)
+            return;
         if (Control.SwapItem && !PrevControl.SwapItem && !IsUsingItem)
         {
             ItemType++;
@@ -245,13 +256,13 @@ public class Player : MonoBehaviour
             RaycastHit2D ray = Physics2D.Raycast((Vector2)LaserPtr.transform.position, dir, 20, LayerMask.GetMask("World", "Goon"));
             RaycastHit2D ray2 = Physics2D.Raycast((Vector2)LaserPtr.transform.position - dir * 0.5f, dir, 20, LayerMask.GetMask("World", "Goon"));
             float newDist = 20;
-            if (ray2.distance < ray.distance || ray.distance == 0)
-            {
-                newDist = ray2.distance - 0.5f;
-            }
-            else if (ray.distance > 0)
+            if (ray.distance > 0)
             {
                 newDist = ray.distance;
+            }
+            else if (ray2.distance > 0)
+            {
+                newDist = ray2.distance - 0.5f;
             }
             LaserPtr.transform.localScale = new Vector3(newDist, LaserPtr.transform.localScale.y);
             //Gizmos.DrawLine((Vector2)LaserPtr.transform.position, (Vector2)LaserPtr.transform.position + toMouse.normalized * newDist);
