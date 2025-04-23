@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -86,6 +87,7 @@ public class Player : MonoBehaviour
     public GameObject LaserPtr;
     public Rigidbody2D RB;
     public int TimeSpentNotColliding = 0;
+    public GameObject CheeseSpiderPrefab;
     public void Start()
     {
         Instance = this;
@@ -175,12 +177,10 @@ public class Player : MonoBehaviour
     public float regen = 0;
     public void ItemUpdate()
     {
-        if (CheeseSpider.Active)
-            return;
         if (Control.SwapItem && !PrevControl.SwapItem && !IsUsingItem)
         {
             ItemType++;
-            ItemType %= 2;
+            ItemType %= 3;
         }
         if (ItemType == 0)
         {
@@ -305,6 +305,57 @@ public class Player : MonoBehaviour
         else
         {
             LaserPtr.SetActive(false);
+        }
+        if (ItemType == 2)
+        {
+            if (CheeseSpider.Instance == null)
+            {
+                Instantiate(CheeseSpiderPrefab, transform.position, Quaternion.identity);
+            }
+            else 
+            {
+                //CheeseSpider.Instance.transform.position = anim.ItemSprite.transform.position;
+                if (!CheeseSpider.Active)
+                {
+                    anim.ItemSprite.sprite = null;
+                    anim.ItemSprite.transform.localScale = Vector3.one;
+                    anim.ItemSprite.transform.localEulerAngles = new Vector3(0, 0, -90);
+                    Vector2 toMouse = Utils.MouseWorld - (Vector2)transform.position;
+                    Dir = Mathf.Sign(toMouse.x);
+                    toMouse.y *= 0.4f;
+                    toMouse.y -= 2;
+                    anim.armTargetPos = (Vector2)transform.position + toMouse;
+                    if (Control.MouseLeft)
+                    {
+                        //cast cheese spider
+                        CheeseSpider.Instance.transform.SetParent(null);
+                        CheeseSpider.Instance.IsActive = true;
+                        CheeseSpider.Instance.RB.velocity = toMouse.normalized * 10f + Vector2.up * 10;
+                        for(int i = 0; i < 15; ++i)
+                            ParticleManager.NewParticle(CheeseSpider.Instance.transform.position, Utils.RandFloat(0.75f, 1.25f), CheeseSpider.Instance.RB.velocity * Utils.RandFloat(0.4f, 0.8f), 1.8f, Utils.RandFloat(0.7f, 1f) , 1);
+                    }
+                    else
+                    {
+                        CheeseSpider.Instance.transform.SetParent(anim.ItemSprite.transform);
+                        CheeseSpider.Instance.transform.localPosition = new Vector3(-0.2f, 0.24f, 0);
+                        CheeseSpider.Instance.transform.localEulerAngles = new Vector3(0, 0, 60);
+                    }
+                }
+                else
+                {
+                    anim.armTargetPos = Vector2.zero;
+                }
+                if (Control.MouseRight && CheeseSpider.Active)
+                {
+                    if (CheeseSpider.Instance != null)
+                        Destroy(CheeseSpider.Instance.gameObject);
+                }
+            }
+        }
+        else
+        {
+            if (CheeseSpider.Instance != null)
+                Destroy(CheeseSpider.Instance.gameObject);
         }
     }
     public void OnCollisionEnter2D(Collision2D collision)

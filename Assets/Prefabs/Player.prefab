@@ -619,12 +619,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64f6a4f24a0e13a48a90d8073cc81201, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hurtTimer: 0
+  life: 9
   anim: {fileID: 5626594692653553086}
+  world: {fileID: 0}
   GrappleHookPrefab: {fileID: 6206303392268503657, guid: 0b40f2e2543150d44892697eb83294f9, type: 3}
   LaserPtr: {fileID: 4289706021583346472}
   RB: {fileID: 3947029620220105959}
   TimeSpentNotColliding: 0
+  CheeseSpiderPrefab: {fileID: 6978117419410798826, guid: 69aaef5937bcaf546ae8232d01d5e006, type: 3}
   ItemType: 0
+  regen: 0
 --- !u!114 &5626594692653553086
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -660,6 +665,7 @@ MonoBehaviour:
   TargetCursor: 0
   TargetFront: 1
   eyeTargetPosition: {x: 0, y: 0}
+  useRecoil: 0
 --- !u!1 &6686122012786455878
 GameObject:
   m_ObjectHideFlags: 0

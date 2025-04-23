@@ -1,9 +1,12 @@
+using System.Net.Http.Headers;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CheeseSpider : MonoBehaviour
 {
     public static CheeseSpider Instance;
-    public static bool Active => Instance != null;
+    public static bool Active => Instance != null && Instance.IsActive;
+    public bool IsActive = false;
     public GameObject Visual;
     public GameObject Body;
     public GameObject[] legs;
@@ -13,6 +16,7 @@ public class CheeseSpider : MonoBehaviour
     public Rigidbody2D RB;
     private float Dir = 1;
     public bool TouchingGround = true;
+    public Collider2D c2D;
     public void Start()
     {
         Instance = this;
@@ -25,7 +29,7 @@ public class CheeseSpider : MonoBehaviour
         Vector2 velo = RB.velocity;
         Vector2 targetVelocity = Vector2.zero;
         float topSpeed = TouchingGround ? 5 : 6;
-        float inertia = TouchingGround ? 0.2f : 0.1f;
+        float inertia = TouchingGround ? 0.2f : 0.02f;
         float jumpForce = 9f;
 
         if (Player.Control.Left)
@@ -52,9 +56,38 @@ public class CheeseSpider : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        MovementUpdate();
-        Vector2 lerp = Vector2.Lerp(Camera.main.transform.position, transform.position, 0.1f);
-        Camera.main.transform.position = new Vector3(lerp.x, lerp.y, -10);
+        Instance = this;
+        if(IsActive)
+        {
+            MovementUpdate();
+            Vector2 lerp = Vector2.Lerp(Camera.main.transform.position, transform.position, 0.1f);
+            Camera.main.transform.position = new Vector3(lerp.x, lerp.y, -10);
+            c2D.enabled = true;
+            RB.gravityScale = 1;
+            transform.localScale = Vector3.one;
+            Body.transform.localEulerAngles = Vector3.forward * 0;
+            for (int i = 0; i < legs.Length; ++i)
+            {
+                GameObject leg = legs[i];
+                GameObject joint = joints[i];
+                leg.SetActive(true);
+                joint.SetActive(true);
+            }
+        }
+        else
+        {
+            for(int i = 0; i < legs.Length; ++i)
+            {
+                GameObject leg = legs[i];
+                GameObject joint = joints[i];
+                leg.transform.localScale = joint.transform.localScale = Vector3.zero;
+            }
+            c2D.enabled = false;
+            RB.gravityScale = 0;
+            RB.velocity *= 0f;
+        }
+        if(Utils.RandFloat(1) < 0.05f)
+            ParticleManager.NewParticle(Body.transform.position + Vector3.up * 0.4f, Utils.RandFloat(0.75f, 1.25f), CheeseSpider.Instance.RB.velocity * Utils.RandFloat(0.4f, 0.8f), 1.8f, Utils.RandFloat(0.7f, 1f) , 1);
     }
     public void Animate()
     {
@@ -90,8 +123,9 @@ public class CheeseSpider : MonoBehaviour
             if (circular.y < 0)
                 circular.y *= 0.1f;
             g.transform.localPosition = circular;
-            float angle = Mathf.Sin(r) * 15 + (airborne ? side * 45 : 0);
+            float angle = Mathf.Sin(r * Dir) * 20 + (airborne ? side * 45 : 0);
             g.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(g.transform.localEulerAngles.z, angle, 0.1f);
+            g.transform.localScale = Vector3.one * Mathf.Lerp(g.transform.localScale.x, 1, 0.1f);
         }
         for (int i = 0; i < joints.Length; ++i)
         {
@@ -99,9 +133,9 @@ public class CheeseSpider : MonoBehaviour
             int j = i;
             Vector2 toLeg = legs[j].transform.position - g.transform.position + new Vector3(0, -0.125f);
             g.transform.eulerAngles = Vector3.forward * (Mathf.Rad2Deg * toLeg.ToRotation() + 90);
-            g.transform.localScale = new Vector3(1, (toLeg.magnitude * 2 - 0.125f), 1);
+            g.transform.localScale = new Vector3(Mathf.Lerp(g.transform.localScale.x, 1, 0.1f), (toLeg.magnitude * 2 - 0.125f), 1);
         }
-
+        transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(transform.localEulerAngles.z, 0, 0.1f);
 
         Body.transform.localPosition = new Vector3(0, -0.25f + Mathf.Sin(AnimCounter * 2 + Mathf.PI) * 1f / 32f, 0);
     }
@@ -111,5 +145,9 @@ public class CheeseSpider : MonoBehaviour
         {
             TouchingGround = true;
         }
+    }
+    public void OnDestroy()
+    {
+        CheeseSpider.Instance = null;
     }
 }
