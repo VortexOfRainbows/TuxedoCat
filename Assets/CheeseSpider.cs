@@ -15,14 +15,17 @@ public class CheeseSpider : MonoBehaviour
     public float AnimCounter = 0;
     public Rigidbody2D RB;
     private float Dir = 1;
-    public bool TouchingGround = true;
+    public bool TouchingGround = false;
     public Collider2D c2D;
+    public float AliveTimer = 0;
     public void Start()
     {
+        TouchingGround = false;
         Instance = this;
     }
     public void MovementUpdate()
     {
+        AliveTimer += Time.fixedDeltaTime;
         Instance = this;
         if (Mathf.Abs(RB.velocity.x) > 0.1f)
             Dir = Mathf.Sign(RB.velocity.x);
@@ -144,6 +147,24 @@ public class CheeseSpider : MonoBehaviour
         if (collision.CompareTag("World") || collision.CompareTag("Standable"))
         {
             TouchingGround = true;
+        }
+    }
+    public void Kill()
+    {
+        Destroy(gameObject);
+        if(Active)
+        {
+            for (int i = 0; i < 20; ++i)
+            {
+                ParticleManager.NewParticle(transform.position, Utils.RandFloat(1f, 2f), RB.velocity * Utils.RandFloat(0.25f, 0.75f), 2.5f, Utils.RandFloat(2f, 3f), 1);
+            }
+            for (int i = 0; i < 3; ++i)
+            {
+                GameObject g = Projectile.NewProjectile<Cheese>(transform.position, Utils.RandCircle(2) + Vector2.up * 2);
+                g.GetComponent<ProjComponents>().rb.gravityScale = Utils.RandFloat(0.3f, 0.5f);
+                g.GetComponent<Projectile>().Hostile = false;
+                g.transform.localScale *= Utils.RandFloat(0.6f, 0.95f);
+            }
         }
     }
     public void OnDestroy()

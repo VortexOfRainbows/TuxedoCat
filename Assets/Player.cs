@@ -38,6 +38,7 @@ public class Control
 public class Player : MonoBehaviour
 {
     public float hurtTimer = 0;
+    public float DelayCameraMovement = 0f;
     private Color color = Color.white;
     public void Hurt(int damage = 1)
     {
@@ -113,6 +114,10 @@ public class Player : MonoBehaviour
             if (Control.Right)
                 targetVelocity.x += topSpeed;
         }
+        else
+        {
+            inertia *= 2.5f;
+        }
 
         if (TouchingGround)
             velo.x = Mathf.Lerp(velo.x, targetVelocity.x, inertia);
@@ -160,9 +165,21 @@ public class Player : MonoBehaviour
         TimeSpentNotColliding++;
         if(!CheeseSpider.Active)
         {
-            Vector2 lerp = Vector2.Lerp(Camera.main.transform.position, Player.Position, 0.1f);
-            Camera.main.transform.position = new Vector3(lerp.x, lerp.y, -10);
+            if (DelayCameraMovement <= 0)
+            {
+                Vector2 lerp = Vector2.Lerp(Camera.main.transform.position, Player.Position, 0.1f);
+                Camera.main.transform.position = new Vector3(lerp.x, lerp.y, -10);
+            }
+            else
+            {
+                DelayCameraMovement -= Time.fixedDeltaTime;
+            }
         }
+        else
+        {
+            DelayCameraMovement = 0.5f;
+        }
+
         if (--hurtTimer >= 0)
             color = Color.Lerp(color, Color.red, 0.12f);
         else
@@ -240,7 +257,7 @@ public class Player : MonoBehaviour
             {
                 anim.ItemSprite.sprite = Resources.Load<Sprite>("Items/YarnWithHook");
             }
-            anim.ItemSprite.transform.localScale = Vector3.one * 0.6f;
+            anim.ItemSprite.transform.localScale = Vector3.one * 0.7f;
             anim.ItemSprite.transform.localEulerAngles = new Vector3(0, 0, 0);
         }
         if (ItemType == 1)
@@ -310,7 +327,9 @@ public class Player : MonoBehaviour
         {
             if (CheeseSpider.Instance == null)
             {
-                Instantiate(CheeseSpiderPrefab, transform.position, Quaternion.identity);
+                CheeseSpider.Instance = Instantiate(CheeseSpiderPrefab, transform.position, Quaternion.identity).GetComponent<CheeseSpider>();
+                CheeseSpider.Instance.transform.localScale = Vector3.zero;
+                UseAnimation = 30;
             }
             else 
             {
@@ -325,7 +344,7 @@ public class Player : MonoBehaviour
                     toMouse.y *= 0.4f;
                     toMouse.y -= 2;
                     anim.armTargetPos = (Vector2)transform.position + toMouse;
-                    if (Control.MouseLeft)
+                    if (Control.MouseLeft && UseAnimation <= 0)
                     {
                         //cast cheese spider
                         CheeseSpider.Instance.transform.SetParent(null);
@@ -333,29 +352,40 @@ public class Player : MonoBehaviour
                         CheeseSpider.Instance.RB.velocity = toMouse.normalized * 10f + Vector2.up * 10;
                         for(int i = 0; i < 15; ++i)
                             ParticleManager.NewParticle(CheeseSpider.Instance.transform.position, Utils.RandFloat(0.75f, 1.25f), CheeseSpider.Instance.RB.velocity * Utils.RandFloat(0.4f, 0.8f), 1.8f, Utils.RandFloat(0.7f, 1f) , 1);
+                        UseAnimation = 0;
                     }
                     else
                     {
+                        float percent = Mathf.Min(1, 1 - UseAnimation / 30f);
                         CheeseSpider.Instance.transform.SetParent(anim.ItemSprite.transform);
                         CheeseSpider.Instance.transform.localPosition = new Vector3(-0.2f, 0.24f, 0);
                         CheeseSpider.Instance.transform.localEulerAngles = new Vector3(0, 0, 60);
+                        float sin = Mathf.Sin(percent * percent * Mathf.PI) * 0.4f;
+                        CheeseSpider.Instance.transform.localScale = new Vector3(1, 1, 1) * (percent + sin);
+                        UseAnimation--;
                     }
                 }
                 else
                 {
                     anim.armTargetPos = Vector2.zero;
+                    if (CheeseSpider.Instance.AliveTimer < 0.7f)
+                    {
+                        UseAnimation = 1;
+                    }
+                    else
+                        UseAnimation = 0;
                 }
-                if (Control.MouseRight && CheeseSpider.Active)
+                if (Control.MouseRight && CheeseSpider.Active && CheeseSpider.Instance.AliveTimer > 0.7f)
                 {
                     if (CheeseSpider.Instance != null)
-                        Destroy(CheeseSpider.Instance.gameObject);
+                        CheeseSpider.Instance.Kill();
                 }
             }
         }
         else
         {
             if (CheeseSpider.Instance != null)
-                Destroy(CheeseSpider.Instance.gameObject);
+                CheeseSpider.Instance.Kill();
         }
     }
     public void OnCollisionEnter2D(Collision2D collision)
