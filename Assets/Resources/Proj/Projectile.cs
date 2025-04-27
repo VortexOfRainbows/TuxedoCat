@@ -1,3 +1,4 @@
+using TMPro.EditorUtilities;
 using UnityEngine;
 
 public abstract class Projectile : MonoBehaviour
@@ -45,6 +46,7 @@ public abstract class Projectile : MonoBehaviour
             {
                 --Penetrate;
                 goon.Hurt(1);
+                OnHit(goon);
             }
         }
         if (collision.gameObject.layer == 6 && Hostile) //if it is a player
@@ -60,6 +62,10 @@ public abstract class Projectile : MonoBehaviour
         {
             Kill();
         }
+    }
+    public virtual void OnHit(Goon target)
+    {
+
     }
     public virtual void Init()
     {
@@ -137,7 +143,6 @@ public class Laser : Projectile
 
     }
 }
-
 public class Cheese : Projectile
 {
     public override void Init()
@@ -170,6 +175,58 @@ public class Cheese : Projectile
         for (int i = 0; i < 25; ++i)
         {
             ParticleManager.NewParticle(transform.position, Utils.RandFloat(0.6f, 1.2f), RB.velocity * Utils.RandFloat(-0.25f, 0.9f) + Vector2.up, 1.5f, Utils.RandFloat(0.7f, 1f), 1);
+        }
+    }
+}
+public class CatClawSlash : Projectile
+{
+    public override void Init()
+    {
+        transform.localScale *= 2f;
+        cmp.c2D.offset = new Vector2(0, 0);
+        cmp.spriteRenderer.sprite = null;
+        cmp.spriteRenderer.color = new Color(1, 1, 1, 0.1f);
+        Friendly = true;
+        Hostile = false;
+        TileCollide = false;
+        RB.gravityScale = 0.0f;
+        Penetrate = 3;
+        Vector2 tilt = RB.velocity.normalized * Data[0];
+        Vector2 dir = tilt.RotatedBy(Mathf.Deg2Rad * 90);
+        for (int i = -1; i <= 1; ++i)
+        {
+            float size = i == 0 ? 2 : 1.7f;
+            float speed = i == 0 ? 21f : 17f;
+            float lifeTime = i == 0 ? 0.21f : 0.19f;
+            ParticleManager.NewParticle((Vector2)transform.position - (dir * speed * lifeTime / 2.4f) + tilt * i * 0.29f, size, dir * speed + RB.velocity, 0, lifeTime, 2);
+        }
+        AI();
+    }
+    public override void AI()
+    {
+        RB.rotation = Mathf.Rad2Deg * RB.velocity.ToRotation();
+        cmp.spriteRenderer.flipY = RB.velocity.x < 0;
+        timer++;
+        if(timer > 3 && timer < 10)
+        {
+            Friendly = true;
+        }
+        else
+        {
+            Friendly = false;
+        }
+        if (timer > 20)
+            Kill();
+    }
+    public override void OnKill()
+    {
+    }
+    public override void OnHit(Goon target)
+    {
+        for(int i = 0; i < 3; ++i)
+        {
+            Vector2 circular = Utils.RandCircle(1.5f);
+            ParticleManager.NewParticle((Vector2)target.transform.position + circular, 0.8f, -circular * 10f, 0.25f, 0.25f, 2);
         }
     }
 }

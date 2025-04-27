@@ -401,7 +401,7 @@ public class Player : MonoBehaviour
             anim.armTargetPos = anim.RightArmTargetPos = Vector2.zero;
             Vector2 toMouse = Utils.MouseWorld - (Vector2)transform.position;
             Dir = Mathf.Sign(toMouse.x);
-            int speed = 27;
+            int speed = 16;
             if (UseAnimation <= 0)
             {
                 if(UseAnimation >= 0)
@@ -443,12 +443,21 @@ public class Player : MonoBehaviour
                     anim.ArmRight.transform.localScale = anim.ArmLeft.transform.localScale = Vector3.one * (1 + sin);
                     anim.ForceArmDir = 0;
                 }
+                if (UseAnimation == speed + 10 || UseAnimation == 10)
+                {
+                    float changeDir = UseCounter % 2 * 2 - 1;
+                    Vector2 launchDir = new Vector2(Dir, Utils.RandFloat(-1, 1) * 0.6f) * 0.7f + RB.velocity * 1.1f;
+                    toMouse *= Dir;
+                    Vector2 n = toMouse.normalized * 1f;
+                    launchDir += n;
+                    Projectile.NewProjectile<CatClawSlash>((Vector2)transform.position + new Vector2(Dir * .8f, 0) + n * 1.2f, launchDir, changeDir * -Dir);
+                    UseCounter++;
+                }
                 UseAnimation--;
                 anim.ArmLerpSpeed = 0.4f * percent * percent;
                 if(UseAnimation <= 0)
                 {
                     anim.ForceArmDir = 0;
-                    UseCounter++;
                 }
             }
         }
