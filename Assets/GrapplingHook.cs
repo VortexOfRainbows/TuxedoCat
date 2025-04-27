@@ -30,9 +30,9 @@ public class GrapplingHook : MonoBehaviour
         {
             maxDist = ((Vector2)transform.position - (Vector2)Owner.transform.position + new Vector2(0, 0.2f).RotatedBy(OwnerBody.rotation * Mathf.Deg2Rad)).magnitude - 0.2f;
         }
-        bool goUp = isPlayer ? Player.Control.Up : false;
-        bool goDown = isPlayer ? Player.Control.Down : true;
-        bool onWall = isPlayer ? Player.TimeSpentNotColliding < 4 : true;
+        bool goUp = isPlayer && Player.Control.Up;
+        bool goDown = !isPlayer || Player.Control.Down;
+        bool onWall = !isPlayer || Player.TimeSpentNotColliding < 4;
         float pullSpeed = 4.7f * Mathf.Min(1, timeAttached * 2);
         float pushSpeed = isLantern ? 1.0f : 1.5f;
         if (Attached)

@@ -1,39 +1,42 @@
-using JetBrains.Annotations;
-using System.Collections.Specialized;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class Control
+public struct Control
 {
     public bool SwapItem;
     public bool MouseLeft, MouseRight;
     public bool Up, Down, Left, Right;
-    public void ControlUpdate()
+    public bool Num1, Num2, Num3, Num4;
+    public float MouseWheel;
+    public Control(bool defaultState = false)
     {
-        UpdateKey(ref Up, Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Space), Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow));
-        UpdateKey(ref Down, Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow), 
-            Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow));
-        UpdateKey(ref Left, Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow), 
-            Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow));
-        UpdateKey(ref Right, Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow), 
-            Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow));
-        UpdateKey(ref MouseLeft, Input.GetMouseButton(0));
-        UpdateKey(ref MouseRight, Input.GetMouseButton(1));
-        UpdateKey(ref SwapItem, Input.GetKey(KeyCode.Tab));
+        SwapItem = MouseLeft = MouseRight = Up = Down = Left = Right = defaultState;
+        Num1 = Num2 = Num3 = Num4 = false;
+        MouseWheel = 0;
     }
-    public void UpdateKey(ref bool KeyName, bool Key = false, bool AntiKey = false)
+    public void Update()
     {
-        KeyName = Key && !AntiKey;
+        Up = UpdateKey(Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Space), Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow));
+        Down = UpdateKey(Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow), 
+          Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow));
+        Left = UpdateKey(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow), 
+          Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow));
+        Right = UpdateKey(Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow), 
+          Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow));
+        MouseLeft = UpdateKey(Input.GetMouseButton(0));
+        MouseRight = UpdateKey(Input.GetMouseButton(1));
+        SwapItem = UpdateKey(Input.GetKey(KeyCode.Tab));
+
+        Num1 = UpdateKey(Input.GetKey(KeyCode.Alpha1));
+        Num2 = UpdateKey(Input.GetKey(KeyCode.Alpha2));
+        Num3 = UpdateKey(Input.GetKey(KeyCode.Alpha3));
+        Num4 = UpdateKey(Input.GetKey(KeyCode.Alpha4));
+        MouseWheel = Input.mouseScrollDelta.y;
     }
-    public void CopyFrom(Control other)
+    public static bool UpdateKey(bool Key = false, bool AntiKey = false)
     {
-        Up = other.Up;
-        Down = other.Down;
-        Left = other.Left;
-        Right = other.Right;
-        MouseLeft = other.MouseLeft;
-        MouseRight = other.MouseRight;
-        SwapItem = other.SwapItem;
+        return Key && !AntiKey;
     }
 }
 public class Player : MonoBehaviour
@@ -82,8 +85,8 @@ public class Player : MonoBehaviour
     public bool StartUsingItem => Control.MouseLeft ;
     public bool IsUsingItem => UseAnimation > 0;
     public static Player Instance;
-    public static Control Control { get; private set; } = new Control();
-    public static Control PrevControl { get; private set; } = new Control();
+    public static Control Control = new();
+    public static Control PrevControl = new();
     public static Vector3 Position => Instance == null ? (Instance = FindFirstObjectByType<Player>()).transform.position : Instance.transform.position;
     public GameObject GrappleHookPrefab;
     public GameObject LaserPtr;
@@ -143,8 +146,8 @@ public class Player : MonoBehaviour
     }
     public void FixedUpdate()
     {
-        PrevControl.CopyFrom(Control);
-        Control.ControlUpdate();
+        PrevControl = Control;
+        Control.Update();
         MovementUpdate();
         ItemUpdate();
         if(life < 9)
@@ -194,13 +197,40 @@ public class Player : MonoBehaviour
     public int ItemType = 0;
     public float regen = 0;
     public int UseCounter = 0;
+    public float ItemTypeCounter = 0;
+    public float ItemSwapDelay = 0;
     public void ItemUpdate()
     {
-        if (Control.SwapItem && !PrevControl.SwapItem && (!IsUsingItem || (ItemType == 2 && !CheeseSpider.Active)))
+        if (!IsUsingItem || (ItemType == 3 && !CheeseSpider.Active))
         {
-            ItemType++;
-            ItemType %= 4;
-            UseAnimation = 0;
+            int prevType = ItemType;
+            if(ItemSwapDelay <= 0)
+            {
+                ItemTypeCounter += Control.MouseWheel;
+                if (ItemTypeCounter >= 1 || ItemTypeCounter <= -1)
+                {
+                    ItemType -= (int)Mathf.Sign(ItemTypeCounter);
+                    if (ItemType < 0)
+                        ItemType += 4;
+                    ItemType %= 4;
+                    ItemTypeCounter = 0;
+                    ItemSwapDelay = 5;
+                }
+            }
+            else
+            {
+                ItemSwapDelay--;
+            }
+            if (Control.Num1)
+                ItemType = 0;
+            else if (Control.Num2)
+                ItemType = 1;
+            else if (Control.Num3)
+                ItemType = 2;
+            else if (Control.Num4)
+                ItemType = 3;
+            if(prevType != ItemType)
+                UseAnimation = 0;
         }
         if (ItemType == 0)
         {
@@ -326,7 +356,7 @@ public class Player : MonoBehaviour
         {
             LaserPtr.SetActive(false);
         }
-        if (ItemType == 2)
+        if (ItemType == 3)
         {
             if (CheeseSpider.Instance == null)
             {
@@ -390,7 +420,7 @@ public class Player : MonoBehaviour
             if (CheeseSpider.Instance != null)
                 CheeseSpider.Instance.Kill();
         }
-        if(ItemType == 3)
+        if(ItemType == 2)
         {
             anim.ItemSprite.sprite = anim.BackItemSprite.sprite = Resources.Load<Sprite>("Items/CatClaw");
             anim.ItemSprite.transform.localScale = anim.BackItemSprite.transform.localScale = Vector3.one;
@@ -469,7 +499,7 @@ public class Player : MonoBehaviour
             anim.BackItemSprite.sortingOrder = -4;
             anim.ArmLerpSpeed = 0.1f;
             anim.ForceArmDir = 0;
-            //anim.armTargetPos = anim.RightArmTargetPos = Vector2.zero;
+            anim.RightArmTargetPos = Vector2.zero;
         }
     }
     public void OnCollisionEnter2D(Collision2D collision)
