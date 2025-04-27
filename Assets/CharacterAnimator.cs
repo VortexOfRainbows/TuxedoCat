@@ -29,18 +29,22 @@ public class CharacterAnimator : MonoBehaviour
     public GameObject ArmLeft;
     public GameObject ArmRight;
     public SpriteRenderer ItemSprite;
+    public SpriteRenderer BackItemSprite;
     public Vector2 oldItemPos;
     public float walkCounter = 0;
     public Vector2 oldVelo = Vector2.zero;
     public bool prevTouchingGround = false;
     public bool TouchingGround = false;
     public Vector2 armTargetPos = Vector2.zero;
+    public Vector2 RightArmTargetPos = Vector2.zero;
     public int UseAnimation = 0;
     public float AnimSpeed => 40f;
     public bool TargetCursor =  false;
     public bool TargetFront = true;
     public Vector2 eyeTargetPosition = Vector2.zero;
     public float useRecoil = 0;
+    public float ArmLerpSpeed = 0.1f;
+    public int ForceArmDir = 0;
     public void Animate()
     {
         oldItemPos = ItemSprite.transform.position;
@@ -81,7 +85,8 @@ public class CharacterAnimator : MonoBehaviour
             float rightAngle = -leftAngle;
             if (Grapple == null && armTargetPos == Vector2.zero)
                 ArmLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z, leftAngle, 0.07f);
-            ArmRight.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmRight.transform.localEulerAngles.z, rightAngle, 0.07f);
+            if (RightArmTargetPos == Vector2.zero)
+                ArmRight.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmRight.transform.localEulerAngles.z, rightAngle, 0.07f);
 
             leftAngle = Mathf.Cos(walkCounter) * -12 * walkSpeedMultiplier;
             rightAngle = -leftAngle;
@@ -96,7 +101,8 @@ public class CharacterAnimator : MonoBehaviour
             LegRight.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(LegRight.transform.localEulerAngles.z, -12f * jumpSpeedMultiplier, 0.05f);
             if (Grapple == null && armTargetPos == Vector2.zero)
                 ArmLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z, -30 * jumpSpeedMultiplier, 0.05f);
-            ArmRight.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmRight.transform.localEulerAngles.z, 30 * jumpSpeedMultiplier, 0.05f);
+            if (RightArmTargetPos == Vector2.zero)
+                ArmRight.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmRight.transform.localEulerAngles.z, 30 * jumpSpeedMultiplier, 0.05f);
         }
         if (Grapple != null && UseAnimation > AnimSpeed)
         {
@@ -110,7 +116,40 @@ public class CharacterAnimator : MonoBehaviour
         {
             Vector2 toHook = armTargetPos - (Vector2)ArmLeft.transform.position;
             toHook.x *= Dir;
-            ArmLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z, toHook.ToRotation() * Mathf.Rad2Deg + 90f + useRecoil, prevDir != Dir ? 1 : 0.1f);
+            //if(ForceArmDir != 0)
+            //{
+            //    float z = ArmLeft.transform.localEulerAngles.z;
+            //    float r = toHook.ToRotation() * Mathf.Rad2Deg + 90f + useRecoil;
+            //    if (r < z && ForceArmDir == 1)
+            //        r += 360;
+            //    ArmLeft.transform.localEulerAngles = Vector3.forward *
+            //        (Mathf.Lerp(z,
+            //        r,
+            //        prevDir != Dir ? 1 : ArmLerpSpeed));
+            //}
+            //else
+                ArmLeft.transform.localEulerAngles = Vector3.forward *
+                    (Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z,
+                    toHook.ToRotation() * Mathf.Rad2Deg + 90f + useRecoil,
+                    prevDir != Dir ? 1 : ArmLerpSpeed));
+        }
+        if (RightArmTargetPos != Vector2.zero)
+        {
+            Vector2 toHook = RightArmTargetPos - (Vector2)ArmRight.transform.position;
+            toHook.x *= Dir;
+            //if (ForceArmDir == 0)
+            //{
+            //    float z = ArmRight.transform.localEulerAngles.z;
+            //    float r = toHook.ToRotation() * Mathf.Rad2Deg + 90f + useRecoil;
+            //    if (r < z && ForceArmDir == 0)
+            //        r += 360;
+            //    ArmRight.transform.localEulerAngles = Vector3.forward *
+            //        (Mathf.Lerp(z,
+            //        r,
+            //        prevDir != Dir ? 1 : ArmLerpSpeed));
+            //}
+            //else
+            ArmRight.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmRight.transform.localEulerAngles.z, toHook.ToRotation() * Mathf.Rad2Deg + 90f + useRecoil, prevDir != Dir ? 1 : ArmLerpSpeed);
         }
         useRecoil *= 0.9f;
         if(TargetCursor)

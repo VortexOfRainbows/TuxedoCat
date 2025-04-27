@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections.Specialized;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -192,12 +193,14 @@ public class Player : MonoBehaviour
     }
     public int ItemType = 0;
     public float regen = 0;
+    public int UseCounter = 0;
     public void ItemUpdate()
     {
-        if (Control.SwapItem && !PrevControl.SwapItem && !IsUsingItem)
+        if (Control.SwapItem && !PrevControl.SwapItem && (!IsUsingItem || (ItemType == 2 && !CheeseSpider.Active)))
         {
             ItemType++;
-            ItemType %= 3;
+            ItemType %= 4;
+            UseAnimation = 0;
         }
         if (ItemType == 0)
         {
@@ -386,6 +389,78 @@ public class Player : MonoBehaviour
         {
             if (CheeseSpider.Instance != null)
                 CheeseSpider.Instance.Kill();
+        }
+        if(ItemType == 3)
+        {
+            anim.ItemSprite.sprite = anim.BackItemSprite.sprite = Resources.Load<Sprite>("Items/CatClaw");
+            anim.ItemSprite.transform.localScale = anim.BackItemSprite.transform.localScale = Vector3.one;
+            anim.ItemSprite.transform.localEulerAngles = anim.BackItemSprite.transform.localEulerAngles = new Vector3(0, 0, -90);
+            anim.ItemSprite.sortingOrder = 7;
+            anim.BackItemSprite.sortingOrder = -6;
+            anim.BackItemSprite.flipY = true;
+            anim.armTargetPos = anim.RightArmTargetPos = Vector2.zero;
+            Vector2 toMouse = Utils.MouseWorld - (Vector2)transform.position;
+            Dir = Mathf.Sign(toMouse.x);
+            int speed = 27;
+            if (UseAnimation <= 0)
+            {
+                if(UseAnimation >= 0)
+                {
+                    if(StartUsingItem)
+                    {
+                        UseAnimation = speed * 2;
+                    }
+                    else
+                    { 
+                        UseCounter = 0; 
+                    }
+                }
+                else 
+                {
+                    UseAnimation++;
+                }
+                anim.ArmLerpSpeed = 0.1f;
+                anim.ArmLeft.transform.localScale = anim.ArmRight.transform.localScale = Vector3.one;
+            }
+            else
+            {
+                float percent = 1 - ((UseAnimation - 1) % speed) / (float)speed;
+                float sin = Mathf.Sin(percent * Mathf.PI) * 0.4f;
+                toMouse *= Dir;
+                float r = toMouse.ToRotation();
+                if (UseAnimation > speed * 1)
+                {
+                    anim.ForceArmDir = 1;
+                    armTargetPos = (Vector2)transform.position + new Vector2(Dir, 2f);
+                    anim.RightArmTargetPos = (Vector2)transform.position + new Vector2(Dir, -2f);
+                    if(UseCounter > 0)
+                        anim.ArmRight.transform.localScale = anim.ArmLeft.transform.localScale = Vector3.one * (1 + sin);
+                }
+                else
+                {
+                    armTargetPos = (Vector2)transform.position + new Vector2(Dir, -2f);
+                    anim.RightArmTargetPos = (Vector2)transform.position + new Vector2(Dir, 2f);
+                    anim.ArmRight.transform.localScale = anim.ArmLeft.transform.localScale = Vector3.one * (1 + sin);
+                    anim.ForceArmDir = 0;
+                }
+                UseAnimation--;
+                anim.ArmLerpSpeed = 0.4f * percent * percent;
+                if(UseAnimation <= 0)
+                {
+                    anim.ForceArmDir = 0;
+                    UseCounter++;
+                }
+            }
+        }
+        else
+        {
+            UseCounter = 0;
+            anim.BackItemSprite.sprite = null;
+            anim.ItemSprite.sortingOrder = 5;
+            anim.BackItemSprite.sortingOrder = -4;
+            anim.ArmLerpSpeed = 0.1f;
+            anim.ForceArmDir = 0;
+            //anim.armTargetPos = anim.RightArmTargetPos = Vector2.zero;
         }
     }
     public void OnCollisionEnter2D(Collision2D collision)
