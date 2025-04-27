@@ -16,6 +16,7 @@ public class CheeseSpider : MonoBehaviour
     public Rigidbody2D RB;
     private float Dir = 1;
     public bool TouchingGround = false;
+    public int touchingGroundForFrames = 0;
     public Collider2D c2D;
     public float AliveTimer = 0;
     public void Start()
@@ -41,13 +42,17 @@ public class CheeseSpider : MonoBehaviour
             targetVelocity.x += topSpeed;
 
         if (TouchingGround)
+        {
+            touchingGroundForFrames++;
             velo.x = Mathf.Lerp(velo.x, targetVelocity.x, inertia);
+        }
         else
         {
+            touchingGroundForFrames = 0;
             velo += targetVelocity * inertia;
             velo.x *= 1 - inertia;
         }
-        if (Player.Control.Up && TouchingGround)
+        if (Player.Control.Up && TouchingGround && (touchingGroundForFrames > 25 || !Player.PrevControl.Up))
         {
             velo.y *= 0.1f;
             velo.y += jumpForce;

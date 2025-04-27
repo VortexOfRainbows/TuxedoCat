@@ -24,14 +24,21 @@ public class GrapplingHook : MonoBehaviour
         transform.SetParent(null);
         if (targetLength != 0)
             UpdatePoints();
-        bool goUp = Player != null ? Player.Control.Up : false;
-        bool goDown = Player != null ? Player.Control.Down : false;
-        bool onWall = Player != null ? Player.TimeSpentNotColliding < 4 : false;
+        bool isLantern = Player == null;
+        bool isPlayer = Player != null;
+        if(isLantern && maxDist == 10)
+        {
+            maxDist = ((Vector2)transform.position - (Vector2)Owner.transform.position + new Vector2(0, 0.2f).RotatedBy(OwnerBody.rotation * Mathf.Deg2Rad)).magnitude - 0.2f;
+        }
+        bool goUp = isPlayer ? Player.Control.Up : false;
+        bool goDown = isPlayer ? Player.Control.Down : true;
+        bool onWall = isPlayer ? Player.TimeSpentNotColliding < 4 : true;
         float pullSpeed = 4.7f * Mathf.Min(1, timeAttached * 2);
-        float pushSpeed = 1.5f;
+        float pushSpeed = isLantern ? 1.0f : 1.5f;
         if (Attached)
         {
-            OwnerBody.gravityScale = 0.675f;
+            if(!isLantern)
+                OwnerBody.gravityScale = 0.675f;
             timeAttached += Time.fixedDeltaTime;
             if (!AttachedPrev)
             {
@@ -45,7 +52,10 @@ public class GrapplingHook : MonoBehaviour
             }
             if(onWall)
             {
-                OwnerBody.velocity = new Vector2(Mathf.Abs(OwnerBody.velocity.x) > 3 ? OwnerBody.velocity.x * 0.7f : OwnerBody.velocity.x * 0.985f, OwnerBody.velocity.y > 0 ? OwnerBody.velocity.y * 0.5f : OwnerBody.velocity.y * 0.94f);
+                if(isPlayer)
+                    OwnerBody.velocity = new Vector2(Mathf.Abs(OwnerBody.velocity.x) > 3 ? OwnerBody.velocity.x * 0.7f : OwnerBody.velocity.x * 0.985f, OwnerBody.velocity.y > 0 ? OwnerBody.velocity.y * 0.5f : OwnerBody.velocity.y * 0.94f);
+                else
+                    OwnerBody.velocity = new Vector2(OwnerBody.velocity.x, OwnerBody.velocity.y * 0.9875f);
             }
             else
             {
@@ -113,7 +123,8 @@ public class GrapplingHook : MonoBehaviour
             Retracting = true;
         if (Retracting)
         {
-            OwnerBody.gravityScale = 1f;
+            if (!isLantern)
+                OwnerBody.gravityScale = 1f;
             float speed = RB.velocity.magnitude + 1f;
             if(Attached)
             {
