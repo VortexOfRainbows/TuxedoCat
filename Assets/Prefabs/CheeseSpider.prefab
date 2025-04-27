@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6754088466299174718}
   m_Layer: 0
   m_Name: FrontLegJoint
-  m_TagString: Untagged
+  m_TagString: Spider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 420117193090801134}
   m_Layer: 0
   m_Name: Visual
-  m_TagString: Untagged
+  m_TagString: Spider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 1009479334673950001}
   m_Layer: 0
   m_Name: BackLeg2
-  m_TagString: Untagged
+  m_TagString: Spider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -216,7 +216,7 @@ GameObject:
   - component: {fileID: 4408987357690222125}
   m_Layer: 0
   m_Name: FrontLeg
-  m_TagString: Untagged
+  m_TagString: Spider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -300,7 +300,7 @@ GameObject:
   - component: {fileID: 6340789426906405239}
   m_Layer: 0
   m_Name: FrontLeg2
-  m_TagString: Untagged
+  m_TagString: Spider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -384,7 +384,7 @@ GameObject:
   - component: {fileID: 8199517781304217841}
   m_Layer: 0
   m_Name: BackLeg
-  m_TagString: Untagged
+  m_TagString: Spider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -471,7 +471,7 @@ GameObject:
   - component: {fileID: 6499071887470571158}
   m_Layer: 0
   m_Name: CheeseSpider
-  m_TagString: Untagged
+  m_TagString: Spider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -593,7 +593,9 @@ MonoBehaviour:
   AnimCounter: 0
   RB: {fileID: 5843714556433358028}
   TouchingGround: 0
+  touchingGroundForFrames: 0
   c2D: {fileID: 5212430656810247780}
+  AliveTimer: 0
 --- !u!61 &6499071887470571158
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -651,7 +653,7 @@ GameObject:
   - component: {fileID: 7002386533861089142}
   m_Layer: 0
   m_Name: BackLegJoint
-  m_TagString: Untagged
+  m_TagString: Spider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -735,7 +737,7 @@ GameObject:
   - component: {fileID: 1442030932685276945}
   m_Layer: 0
   m_Name: Body
-  m_TagString: Untagged
+  m_TagString: Spider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -823,7 +825,7 @@ GameObject:
   - component: {fileID: 2580377952744408125}
   m_Layer: 0
   m_Name: BackLegJoint (1)
-  m_TagString: Untagged
+  m_TagString: Spider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -907,7 +909,7 @@ GameObject:
   - component: {fileID: 7215317253611331451}
   m_Layer: 0
   m_Name: FrontLegJoint (1)
-  m_TagString: Untagged
+  m_TagString: Spider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
