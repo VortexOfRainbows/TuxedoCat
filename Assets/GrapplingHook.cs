@@ -19,6 +19,8 @@ public class GrapplingHook : MonoBehaviour
     public float pixelsInRope = 6f;
     private int PointCount = 25;
     private float timeAttached = 0;
+    private float RetractDelay = 0;
+    public Collider2D SolidCollider;
     public void FixedUpdate()
     {
         transform.SetParent(null);
@@ -37,6 +39,7 @@ public class GrapplingHook : MonoBehaviour
         float pushSpeed = isLantern ? 1.0f : 1.5f;
         if (Attached)
         {
+            SolidCollider.enabled = false;
             if(!isLantern)
                 OwnerBody.gravityScale = 0.675f;
             timeAttached += Time.fixedDeltaTime;
@@ -123,22 +126,34 @@ public class GrapplingHook : MonoBehaviour
             Retracting = true;
         if (Retracting)
         {
+            float lerp = Mathf.Clamp((1 - RetractDelay / 25f) * 0.2f, 0, 0.2f);
+            if (--RetractDelay <= 0)
+            {
+                SolidCollider.enabled = false;
+                lerp = 1;
+            }
+            else
+            {
+                RB.rotation = toGrapple2.ToRotation() * Mathf.Rad2Deg;
+            }
             if (!isLantern)
                 OwnerBody.gravityScale = 1f;
             float speed = RB.velocity.magnitude + 1f;
-            if(Attached)
+            if (Attached)
             {
                 speed = 10;
             }
             Attached = false;
-            RB.velocity = -toGrapple2.normalized * speed;
-            if(targetLength < minDist)
+            RB.velocity = Vector2.Lerp(RB.velocity, - toGrapple2.normalized * speed, lerp);
+            if (targetLength < minDist)
             {
                 Destroy(gameObject);
             }
         }
         if(RB.velocity.sqrMagnitude > 0.2f && !Retracting)
+        {
             RB.rotation = RB.velocity.ToRotation() * Mathf.Rad2Deg;
+        }
         if(Player == null)
         {
             OwnerBody.rotation = toGrapple2.ToRotation() * Mathf.Rad2Deg - 90;
@@ -212,7 +227,24 @@ public class GrapplingHook : MonoBehaviour
     {
         if (collision.CompareTag("World"))
         {
-            Attached = !Retracting;
+            if(collision.gameObject.layer == 10) //Special Layer for specifically climable objects
+                Attached = !Retracting;
+        }
+    }
+    public void OnCollisionEnter2D(Collision2D collision) => OnCollision2D(collision);
+    public void OnCollisionStay2D(Collision2D collision) => OnCollision2D(collision);
+    public void OnCollision2D(Collision2D collision)
+    {
+        if ((collision.gameObject.CompareTag("World") || collision.gameObject.CompareTag("Standable")) && collision.gameObject.layer != 10)
+        {
+            if (!Attached)
+            {
+                if (!Retracting)
+                {
+                    Retracting = true;
+                    RetractDelay = 25;
+                }
+            }
         }
     }
 }
