@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GrapplingHook : MonoBehaviour
@@ -149,22 +150,35 @@ public class GrapplingHook : MonoBehaviour
         Vector3 itemPos = Player != null ? Player.anim.ItemSprite.transform.position : (Vector2)Owner.transform.position + new Vector2(0, 0.2f).RotatedBy(OwnerBody.rotation * Mathf.Deg2Rad);
         float distance = (transform.position - itemPos).magnitude;
         float distancePercent = distance / maxDist;
+        float dp = distancePercent;
+        if (Attached)
+            dp = 1;
         if (Retracting)
+        {
             distancePercent = 2.2f;
+            dp = Mathf.Min(dp * 2f, 1);
+        }
         Vector2 prevPoint = (Vector2)itemPos;
         Vector2 itemVelocity = Player != null ? (Vector2)Player.anim.ItemSprite.transform.position - Player.anim.oldItemPos : Vector3.zero;
         Vector2 ownerVelo = itemVelocity / Time.fixedDeltaTime + OwnerBody.velocity;
         float added = RunOnce ? 1 : 0f;
+        float rotationV = RB.velocity.ToRotation();
         for (int i = 0; i < points.Count; ++i)
         {
             float percent = i / ((float)points.Count - 1);
             float iPercent = 1 - percent;
             Vector3 targetPos = Vector3.Lerp(itemPos, transform.position, percent);
-            points[i].transform.position = Vector3.Lerp(points[i].transform.position, targetPos, 0.03f + 0.09f * distancePercent);
+            points[i].transform.position = Vector3.Lerp(points[i].transform.position, targetPos, 0.05f + 0.09f * distancePercent);
             points[i].transform.position += (Vector3)RB.velocity * Time.fixedDeltaTime * percent * percent;
             points[i].transform.position -= (Vector3)ownerVelo * Time.fixedDeltaTime * percent * iPercent;
             points[i].transform.position += (Vector3)ownerVelo * Time.fixedDeltaTime * iPercent * iPercent;
             Vector2 toPrev = prevPoint - (Vector2)points[i].transform.position;
+            if (Player != null)
+            {
+                float sin = Mathf.Sin(Mathf.PI * i / 3f);
+                points[i].transform.position += (0.5f + dp * 0.5f) * (Vector3)(new Vector2(0, sin * 0.0675f * (1 - dp) * (0.1f + 0.9f * iPercent)).RotatedBy(Mathf.LerpAngle(rotationV * Mathf.Rad2Deg, (-toPrev).ToRotation() * Mathf.Rad2Deg, 0.5f) * Mathf.Deg2Rad));
+            }
+            toPrev = prevPoint - (Vector2)points[i].transform.position;
             points[i].transform.GetChild(0).transform.eulerAngles = new Vector3(0, 0, toPrev.ToRotation() * Mathf.Rad2Deg);
             float horizontalScale = toPrev.magnitude * 32f / pixelsInRope; //32 pixels per unit, 6 pixel width sprite
             points[i].transform.GetChild(0).transform.localScale = new Vector3(horizontalScale, Mathf.Clamp(0.8f - horizontalScale * 0.14f, 0, 1), 1f);
