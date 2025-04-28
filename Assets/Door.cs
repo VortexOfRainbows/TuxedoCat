@@ -15,7 +15,7 @@ public class Door : MonoBehaviour
         Open = CheckOpen();
         if(Open)
         {
-            Gate.transform.localPosition = Gate.transform.localPosition.Lerp(new Vector3(0, 0.5f, 0), 0.025f);
+            Gate.transform.localPosition = Gate.transform.localPosition.Lerp(new Vector3(0, 1.5f, 0), 0.025f);
             if(Gate.transform.localPosition.y < 0.5f)
                 Gate.transform.localPosition += new Vector3(0, 0.01f);
         }
