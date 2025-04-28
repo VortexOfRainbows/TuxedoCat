@@ -36,7 +36,7 @@ public class GrapplingHook : MonoBehaviour
         bool goDown = !isPlayer || Player.Control.Down;
         bool onWall = !isPlayer || Player.TimeSpentNotColliding < 4;
         float pullSpeed = 4.7f * Mathf.Min(1, timeAttached * 2);
-        float pushSpeed = isLantern ? 1.0f : 1.5f;
+        float pushSpeed = (isLantern ? 1.0f : 1.5f) * Mathf.Min(1, timeAttached * 2);
         if (Attached)
         {
             SolidCollider.enabled = false;
@@ -45,6 +45,7 @@ public class GrapplingHook : MonoBehaviour
             timeAttached += Time.fixedDeltaTime;
             if (!AttachedPrev)
             {
+                targetLength = (transform.position - Owner.transform.position).magnitude;
                 OwnerBody.velocity *= 1.1f;
                 RB.velocity *= 0.0f;
                 RB.gravityScale = 0;

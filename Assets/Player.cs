@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public struct Control
 {
@@ -103,28 +104,62 @@ public class Player : MonoBehaviour
     }
     public void MovementUpdate()
     {
-        if (Mathf.Abs(RB.velocity.x) > 0.1f)
-            Dir = Mathf.Sign(RB.velocity.x);
+        if (IsUsingItem) {
+            if (anim.Climbing)
+                anim.TouchingGround = false;
+            anim.Climbing = false;
+        }
         Vector2 velo = RB.velocity;
         Vector2 targetVelocity = Vector2.zero;
         float topSpeed = TouchingGround ? 5 : 10;
         float inertia = TouchingGround ? 0.05f : 0.0225f;
         float jumpForce = 11f;
 
-        if(!CheeseSpider.Active)
+        if (anim.Climbing)
         {
-            if (Control.Left)
+            inertia = 0.1f;
+            Dir = anim.ClimbDir;
+            RB.gravityScale = 0.1f;
+            velo.y *= 0.95f;
+        }
+        else
+        {
+            if (Mathf.Abs(RB.velocity.x) > 0.1f)
+                Dir = Mathf.Sign(RB.velocity.x);
+            RB.gravityScale = 1f;
+        }
+
+        if (!CheeseSpider.Active)
+        {
+            if (Control.Left) {
                 targetVelocity.x -= topSpeed;
-            if (Control.Right)
+                if(anim.Climbing && anim.ClimbDir == -1)
+                    targetVelocity.y += topSpeed * 0.5f;
+            }
+            if (Control.Right) {
                 targetVelocity.x += topSpeed;
+                if (anim.Climbing && anim.ClimbDir == 1)
+                    targetVelocity.y += topSpeed * 0.5f;
+            }
+            if(Control.Up && targetVelocity.y == 0 && anim.Climbing)
+                targetVelocity.y += topSpeed * 0.5f;
+            if (Control.Down && anim.Climbing)
+            {
+                targetVelocity.y -= topSpeed * 0.5f;
+            }
         }
         else
         {
             inertia *= 2.5f;
         }
 
-        if (TouchingGround)
+        if (TouchingGround) {
             velo.x = Mathf.Lerp(velo.x, targetVelocity.x, inertia);
+            if(anim.Climbing)
+            {
+                velo.y = Mathf.Lerp(velo.y, targetVelocity.y, inertia);
+            }
+        }
         else
         {
             velo += targetVelocity * inertia;
@@ -134,6 +169,10 @@ public class Player : MonoBehaviour
 
         if (!CheeseSpider.Active)
         {
+            if(anim.Climbing)
+            {
+                TouchingGround = false;
+            }
             if (Control.Up && TouchingGround)
             {
                 velo.y *= 0.1f;
@@ -165,7 +204,7 @@ public class Player : MonoBehaviour
         }
         anim.Animate();
         anim.prevTouchingGround = TouchingGround;
-        TouchingGround = false;
+        TouchingGround = anim.Climbing = false;
         TimeSpentNotColliding++;
         if(!CheeseSpider.Active)
         {
@@ -512,9 +551,10 @@ public class Player : MonoBehaviour
     }
     public void Collide2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("World") || collision.gameObject.CompareTag("Standable"))
+        if ((collision.gameObject.CompareTag("World") || collision.gameObject.CompareTag("Standable")))
         {
-            TimeSpentNotColliding = 0;
+            if(collision.gameObject.layer != 10)
+                TimeSpentNotColliding = 0;
         }
     }
 }

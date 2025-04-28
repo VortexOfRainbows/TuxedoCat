@@ -5,15 +5,18 @@ public class CharacterAnimator : MonoBehaviour
 {
     public void OnTriggerStay2D(Collider2D collision)
     {
-        if ((collision.CompareTag("World") || collision.CompareTag("Standable")) && collision.gameObject.layer != 10)
+        if ((collision.CompareTag("World") || collision.CompareTag("Standable")))
         {
-            TouchingGround = true;
+            if (collision.gameObject.layer != 10)
+                TouchingGround = true;
         }
     }
     public static readonly Vector2 ArmLeftPos = new Vector3(0.3125f, -0.125f, 0);
     public static readonly Vector2 ArmRightPos = new Vector3(-0.3125f, -0.125f, 0);
     public static readonly Vector2 LegLeftPos = new Vector3(-0.15625f, -0.65625f, 0);
     public static readonly Vector2 LegRightPos = new Vector3(0.15625f, -0.65625f, 0);
+    public bool Climbing = false;
+    public float ClimbDir = 1;
     public float Dir = 1;
     public float prevDir = 1;
     public GameObject Grapple;
@@ -45,6 +48,10 @@ public class CharacterAnimator : MonoBehaviour
     public int ForceArmDir = 0;
     public void Animate()
     {
+        if (Climbing)
+            Dir = ClimbDir;
+
+
         oldItemPos = ItemSprite.transform.position;
         float veloDiff = RB.velocity.y - oldVelo.y;
         oldVelo = RB.velocity;
@@ -56,14 +63,23 @@ public class CharacterAnimator : MonoBehaviour
         Visual.transform.localEulerAngles = new Vector3(0, 0, Mathf.LerpAngle(Visual.transform.localEulerAngles.z, targetR, 0.04f));
         float walkMotion = 4f / 32f;
         float walkDirection = 1f;
-        //if (Entity.Velocity.y < -0.0 && MathF.Abs(Entity.Velocity.y) > 0.001f && MathF.Abs(Entity.Velocity.x) < 0.001f)
-        //    walkDirection = -1;
+            //if (Entity.Velocity.y < -0.0 && MathF.Abs(Entity.Velocity.y) > 0.001f && MathF.Abs(Entity.Velocity.x) < 0.001f)
+            //    walkDirection = -1;
         float velocity = Mathf.Sqrt(Mathf.Abs(RB.velocity.x)) * 3f * Mathf.Sign(RB.velocity.x * Dir);
+        if (Climbing)
+            velocity += Mathf.Sqrt(Mathf.Abs(RB.velocity.y)) * 3f;
         float verticalVelo = Mathf.Abs(RB.velocity.y);
         float walkSpeedMultiplier = Mathf.Clamp(Math.Abs(velocity / 2f), 0, 1f);
         float jumpSpeedMultiplier = Mathf.Clamp(Math.Abs(verticalVelo / 3f), 0, 1f);
         walkCounter += walkDirection * velocity * Mathf.Deg2Rad * Mathf.Clamp(walkSpeedMultiplier * 9, 0, 1);
         walkCounter = walkCounter.WrapAngle();
+
+        if (Climbing)
+        {
+            float sin = MathF.Sin(walkCounter);
+            armTargetPos = (Vector2)transform.position + new Vector2(ClimbDir, 0.5f * sin);
+            RightArmTargetPos = (Vector2)transform.position + new Vector2(ClimbDir, -0.5f * sin);
+        }
 
         Vector2 circularMotion = new Vector2(walkMotion, 0).RotatedBy(-walkCounter) * walkSpeedMultiplier;
         circularMotion.x *= 0.5f;
@@ -114,39 +130,15 @@ public class CharacterAnimator : MonoBehaviour
         {
             Vector2 toHook = armTargetPos - (Vector2)ArmLeft.transform.position;
             toHook.x *= Dir;
-            //if(ForceArmDir != 0)
-            //{
-            //    float z = ArmLeft.transform.localEulerAngles.z;
-            //    float r = toHook.ToRotation() * Mathf.Rad2Deg + 90f + useRecoil;
-            //    if (r < z && ForceArmDir == 1)
-            //        r += 360;
-            //    ArmLeft.transform.localEulerAngles = Vector3.forward *
-            //        (Mathf.Lerp(z,
-            //        r,
-            //        prevDir != Dir ? 1 : ArmLerpSpeed));
-            //}
-            //else
-                ArmLeft.transform.localEulerAngles = Vector3.forward *
-                    (Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z,
-                    toHook.ToRotation() * Mathf.Rad2Deg + 90f + useRecoil,
-                    prevDir != Dir ? 1 : ArmLerpSpeed));
+            ArmLeft.transform.localEulerAngles = Vector3.forward *
+                (Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z,
+                toHook.ToRotation() * Mathf.Rad2Deg + 90f + useRecoil,
+                prevDir != Dir ? 1 : ArmLerpSpeed));
         }
         if (RightArmTargetPos != Vector2.zero)
         {
             Vector2 toHook = RightArmTargetPos - (Vector2)ArmRight.transform.position;
             toHook.x *= Dir;
-            //if (ForceArmDir == 0)
-            //{
-            //    float z = ArmRight.transform.localEulerAngles.z;
-            //    float r = toHook.ToRotation() * Mathf.Rad2Deg + 90f + useRecoil;
-            //    if (r < z && ForceArmDir == 0)
-            //        r += 360;
-            //    ArmRight.transform.localEulerAngles = Vector3.forward *
-            //        (Mathf.Lerp(z,
-            //        r,
-            //        prevDir != Dir ? 1 : ArmLerpSpeed));
-            //}
-            //else
             ArmRight.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmRight.transform.localEulerAngles.z, toHook.ToRotation() * Mathf.Rad2Deg + 90f + useRecoil, prevDir != Dir ? 1 : ArmLerpSpeed);
         }
         useRecoil *= 0.9f;

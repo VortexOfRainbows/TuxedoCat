@@ -149,7 +149,7 @@ public class CheeseSpider : MonoBehaviour
     }
     public void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.CompareTag("World") || collision.CompareTag("Standable"))
+        if ((collision.CompareTag("World") || collision.CompareTag("Standable")) && collision.gameObject.layer != 10)
         {
             TouchingGround = true;
         }
