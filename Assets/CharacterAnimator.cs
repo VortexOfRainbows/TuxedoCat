@@ -1,4 +1,6 @@
 using System;
+using Unity.Burst;
+using UnityEditor.Timeline;
 using UnityEngine;
 
 public class CharacterAnimator : MonoBehaviour
@@ -8,7 +10,9 @@ public class CharacterAnimator : MonoBehaviour
         if ((collision.CompareTag("World") || collision.CompareTag("Standable")))
         {
             if (collision.gameObject.layer != 10)
+            {
                 TouchingGround = true;
+            }
         }
     }
     public static readonly Vector2 ArmLeftPos = new Vector3(0.3125f, -0.125f, 0);
@@ -16,6 +20,7 @@ public class CharacterAnimator : MonoBehaviour
     public static readonly Vector2 LegLeftPos = new Vector3(-0.15625f, -0.65625f, 0);
     public static readonly Vector2 LegRightPos = new Vector3(0.15625f, -0.65625f, 0);
     public bool Climbing = false;
+    public bool prevClimbing = false;
     public float ClimbDir = 1;
     public float Dir = 1;
     public float prevDir = 1;
@@ -69,6 +74,8 @@ public class CharacterAnimator : MonoBehaviour
         if (Climbing)
             velocity += Mathf.Sqrt(Mathf.Abs(RB.velocity.y)) * 3f;
         float verticalVelo = Mathf.Abs(RB.velocity.y);
+        if (verticalVelo < 0.2f)
+            verticalVelo = 0;
         float walkSpeedMultiplier = Mathf.Clamp(Math.Abs(velocity / 2f), 0, 1f);
         float jumpSpeedMultiplier = Mathf.Clamp(Math.Abs(verticalVelo / 3f), 0, 1f);
         walkCounter += walkDirection * velocity * Mathf.Deg2Rad * Mathf.Clamp(walkSpeedMultiplier * 9, 0, 1);
@@ -77,8 +84,9 @@ public class CharacterAnimator : MonoBehaviour
         if (Climbing)
         {
             float sin = MathF.Sin(walkCounter);
-            armTargetPos = (Vector2)transform.position + new Vector2(ClimbDir, 0.5f * sin);
-            RightArmTargetPos = (Vector2)transform.position + new Vector2(ClimbDir, -0.5f * sin);
+            float mult = MathF.Min(1, verticalVelo * 2);
+            armTargetPos = (Vector2)transform.position + new Vector2(ClimbDir, 0.5f * sin * mult);
+            RightArmTargetPos = (Vector2)transform.position + new Vector2(ClimbDir, -0.5f * sin * mult);
         }
 
         Vector2 circularMotion = new Vector2(walkMotion, 0).RotatedBy(-walkCounter) * walkSpeedMultiplier;
@@ -153,5 +161,6 @@ public class CharacterAnimator : MonoBehaviour
         toMouse.x = Mathf.Abs(toMouse.x);
         Head.transform.localEulerAngles = Vector3.forward * (toMouse.ToRotation() * Mathf.Rad2Deg * 0.125f);
         prevDir = Dir;
+        prevClimbing = Climbing;
     }
 }

@@ -94,6 +94,7 @@ public class Player : MonoBehaviour
     public Rigidbody2D RB;
     public int TimeSpentNotColliding = 0;
     public GameObject CheeseSpiderPrefab;
+    public bool wasClimbingUpward = false;
     public void Start()
     {
         Instance = this;
@@ -128,18 +129,23 @@ public class Player : MonoBehaviour
                 Dir = Mathf.Sign(RB.velocity.x);
             RB.gravityScale = 1f;
         }
-
         if (!CheeseSpider.Active)
         {
             if (Control.Left) {
                 targetVelocity.x -= topSpeed;
                 if(anim.Climbing && anim.ClimbDir == -1)
+                {
                     targetVelocity.y += topSpeed * 0.5f;
+                    wasClimbingUpward = true;
+                }
             }
             if (Control.Right) {
                 targetVelocity.x += topSpeed;
                 if (anim.Climbing && anim.ClimbDir == 1)
+                {
                     targetVelocity.y += topSpeed * 0.5f;
+                    wasClimbingUpward = true;
+                }
             }
             if(Control.Up && targetVelocity.y == 0 && anim.Climbing)
                 targetVelocity.y += topSpeed * 0.5f;
@@ -153,7 +159,7 @@ public class Player : MonoBehaviour
             inertia *= 2.5f;
         }
 
-        if (TouchingGround) {
+        if (TouchingGround || anim.Climbing) {
             velo.x = Mathf.Lerp(velo.x, targetVelocity.x, inertia);
             if(anim.Climbing)
             {
@@ -169,18 +175,24 @@ public class Player : MonoBehaviour
 
         if (!CheeseSpider.Active)
         {
+            bool fakeJump = false;
+            if(anim.prevClimbing && !anim.Climbing && wasClimbingUpward)
+                fakeJump = true;
             if(anim.Climbing)
             {
                 TouchingGround = false;
             }
-            if (Control.Up && TouchingGround)
+            if ((Control.Up && TouchingGround) || fakeJump)
             {
                 velo.y *= 0.1f;
                 velo.y += jumpForce;
                 TouchingGround = false;
             }
         }
-
+        if(!anim.prevClimbing && !anim.Climbing)
+        {
+            wasClimbingUpward = false;
+        }
         RB.velocity = velo;
     }
     public void FixedUpdate()
