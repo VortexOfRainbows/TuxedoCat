@@ -95,6 +95,7 @@ public class Player : MonoBehaviour
     public int TimeSpentNotColliding = 0;
     public GameObject CheeseSpiderPrefab;
     public bool wasClimbingUpward = false;
+    public GameObject ClimbCollider;
     public void Start()
     {
         Instance = this;
@@ -105,6 +106,7 @@ public class Player : MonoBehaviour
     }
     public void MovementUpdate()
     {
+        ClimbCollider.SetActive(ItemType == 2);
         if (IsUsingItem) {
             if (anim.Climbing)
                 anim.TouchingGround = false;
@@ -133,18 +135,28 @@ public class Player : MonoBehaviour
         {
             if (Control.Left) {
                 targetVelocity.x -= topSpeed;
-                if(anim.Climbing && anim.ClimbDir == -1)
+                if (anim.Climbing)
                 {
-                    targetVelocity.y += topSpeed * 0.5f;
-                    wasClimbingUpward = true;
+                    if(anim.ClimbDir == -1)
+                    {
+                        targetVelocity.y += topSpeed * 0.5f;
+                        wasClimbingUpward = true;
+                    }
+                    else
+                        wasClimbingUpward = false;
                 }
             }
             if (Control.Right) {
                 targetVelocity.x += topSpeed;
-                if (anim.Climbing && anim.ClimbDir == 1)
+                if (anim.Climbing)
                 {
-                    targetVelocity.y += topSpeed * 0.5f;
-                    wasClimbingUpward = true;
+                    if(anim.ClimbDir == 1)
+                    {
+                        targetVelocity.y += topSpeed * 0.5f;
+                        wasClimbingUpward = true;
+                    }
+                    else
+                        wasClimbingUpward = false;
                 }
             }
             if(Control.Up && targetVelocity.y == 0 && anim.Climbing)
@@ -185,7 +197,7 @@ public class Player : MonoBehaviour
             if ((Control.Up && TouchingGround) || fakeJump)
             {
                 velo.y *= 0.1f;
-                velo.y += jumpForce;
+                velo.y += (fakeJump ? 0.55f : 1) * jumpForce;
                 TouchingGround = false;
             }
         }
