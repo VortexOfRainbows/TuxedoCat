@@ -84,9 +84,9 @@ public class CharacterAnimator : MonoBehaviour
         if (Climbing)
         {
             float sin = MathF.Sin(walkCounter);
-            float mult = MathF.Min(1, verticalVelo * 2);
-            armTargetPos = (Vector2)transform.position + new Vector2(ClimbDir, 0.5f * sin * mult);
-            RightArmTargetPos = (Vector2)transform.position + new Vector2(ClimbDir, -0.5f * sin * mult);
+            float mult = MathF.Min(1, verticalVelo * 3.5f);
+            armTargetPos = (Vector2)transform.position + new Vector2(ClimbDir, 0.65f * sin * mult);
+            RightArmTargetPos = (Vector2)transform.position + new Vector2(ClimbDir, -0.65f * sin * mult);
         }
 
         Vector2 circularMotion = new Vector2(walkMotion, 0).RotatedBy(-walkCounter) * walkSpeedMultiplier;
