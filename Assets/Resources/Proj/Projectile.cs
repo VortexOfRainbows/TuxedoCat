@@ -182,7 +182,8 @@ public class CatClawSlash : Projectile
     public override void Init()
     {
         transform.localScale *= 2f;
-        cmp.c2D.offset = new Vector2(0, 0);
+        cmp.c2D.offset = new Vector2(-0.3f, 0);
+        cmp.c2D.radius = .6f;
         cmp.spriteRenderer.sprite = null;
         cmp.spriteRenderer.color = new Color(1, 1, 1, 0.1f);
         Friendly = true;
