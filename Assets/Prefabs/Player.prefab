@@ -634,6 +634,8 @@ MonoBehaviour:
   wasClimbingUpward: 0
   ClimbCollider: {fileID: 7164986819680830063}
   wallJumpTimer: 0
+  wallJumpGraceFrames: 0
+  SolidCollider: {fileID: 5028932074093413633}
   ItemType: 0
   regen: 0
   UseCounter: 0

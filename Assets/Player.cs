@@ -11,15 +11,18 @@ public struct Control
     public bool Jump;
     public bool Up, Down, Left, Right;
     public bool Num1, Num2, Num3, Num4;
+    public bool E;
     public float MouseWheel;
     public Control(bool defaultState = false)
     {
         SwapItem = MouseLeft = MouseRight = Up = Down = Left = Right = defaultState;
         Num1 = Num2 = Num3 = Num4 = Jump = false;
+        E = false;
         MouseWheel = 0;
     }
     public void Update()
     {
+        E = UpdateKey(Input.GetKey(KeyCode.E));
         Up = UpdateKey(Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Space), Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow));
         Down = UpdateKey(Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow), 
           Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Space));
@@ -45,6 +48,7 @@ public struct Control
 }
 public class Player : MonoBehaviour
 {
+    public static bool InSaveAnimation = false;
     public float hurtTimer = 0;
     public float DelayCameraMovement = 0f;
     private Color color = Color.white;
@@ -101,6 +105,7 @@ public class Player : MonoBehaviour
     public GameObject ClimbCollider;
     public int wallJumpTimer = 0;
     public int wallJumpGraceFrames = 0;
+    public Collider2D SolidCollider;
     public void Start()
     {
         Instance = this;
@@ -111,6 +116,15 @@ public class Player : MonoBehaviour
     }
     public void MovementUpdate()
     {
+        SolidCollider.enabled = !InSaveAnimation;
+        if (!InSaveAnimation)
+        {
+            transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, 0.14f);
+            if (transform.localScale.x > 0.99f)
+                transform.localScale = Vector3.one;
+        }
+        else
+            LaserPtr.SetActive(false);
         ClimbCollider.SetActive(ItemType == 2);
         if (IsUsingItem) {
             if (anim.Climbing)
@@ -151,9 +165,10 @@ public class Player : MonoBehaviour
         {
             if (Mathf.Abs(RB.velocity.x) > 0.1f && !midWallJump)
                 Dir = Mathf.Sign(RB.velocity.x);
-            RB.gravityScale = 1f;
+            if(Grapple == null && !InSaveAnimation)
+                RB.gravityScale = 1f;
         }
-        if (!CheeseSpider.Active)
+        if (!CheeseSpider.Active && !InSaveAnimation)
         {
             if (Control.Left) {
                 targetVelocity.x -= topSpeed;
@@ -213,7 +228,7 @@ public class Player : MonoBehaviour
         }
 
 
-        if (!CheeseSpider.Active)
+        if (!CheeseSpider.Active && !InSaveAnimation)
         {
             bool fakeJump = false;
             float jumpMult = 1.0f;
@@ -315,7 +330,7 @@ public class Player : MonoBehaviour
     public float ItemSwapDelay = 0;
     public void ItemUpdate()
     {
-        if (!IsUsingItem || (ItemType == 3 && !CheeseSpider.Active))
+        if ((!IsUsingItem || (ItemType == 3 && !CheeseSpider.Active)))
         {
             int prevType = ItemType;
             if(ItemSwapDelay <= 0)
@@ -346,6 +361,8 @@ public class Player : MonoBehaviour
             if(prevType != ItemType)
                 UseAnimation = 0;
         }
+        if (!IsUsingItem && InSaveAnimation)
+            return;
         if (ItemType == 0)
         {
             if (StartUsingItem && UseAnimation <= 0)
