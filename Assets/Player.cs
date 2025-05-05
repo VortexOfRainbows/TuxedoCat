@@ -356,13 +356,21 @@ public class Player : MonoBehaviour
                 ItemType = 1;
             else if (Control.Num3)
                 ItemType = 2;
-            else if (Control.Num4)
+            else if (Control.Num4 && !InSaveAnimation)
                 ItemType = 3;
             if(prevType != ItemType)
                 UseAnimation = 0;
         }
         if (!IsUsingItem && InSaveAnimation)
-            return;
+        {
+            if (ItemType == 3)
+            {
+                UseAnimation = 0;
+                ItemType = 2;
+            }
+            else
+                return;
+        }
         if (ItemType == 0)
         {
             if (StartUsingItem && UseAnimation <= 0)

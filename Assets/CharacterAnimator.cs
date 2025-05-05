@@ -1,8 +1,5 @@
 using System;
-using Unity.Burst;
-using UnityEditor.Timeline;
 using UnityEngine;
-
 public class CharacterAnimator : MonoBehaviour
 {
     public void OnTriggerStay2D(Collider2D collision)
