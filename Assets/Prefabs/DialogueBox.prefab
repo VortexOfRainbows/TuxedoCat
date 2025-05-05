@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -71.81015, y: 93.011024}
-  m_SizeDelta: {x: 246.3797, y: 32.2914}
+  m_AnchoredPosition: {x: 0, y: 100}
+  m_SizeDelta: {x: 380, y: 36}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &257689618068104171
 CanvasRenderer:
@@ -95,12 +95,12 @@ MonoBehaviour:
   m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 8
+  m_VerticalAlignment: 8192
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -152,7 +152,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5983017752786000338
 RectTransform:
   m_ObjectHideFlags: 0
@@ -226,14 +226,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameText: {fileID: 5507211650658937873}
   dialogueText: {fileID: 6950144956173999000}
-  Name: Goon A
-  dialogue:
-  - "She\u2019s growing up real fast. She\u2019s currently in her rebellious phase,
-    though."
-  - "Says she\u2019s sick of cheese and wants to go dairy free or something."
-  - "I keep tellin\u2019 her that she needs to follow in my footsteps, but she won\u2019t
-    listen.\r"
+  SpeakerName: []
+  dialogue: []
   textSpeed: 0.025
+  cameraCenter: {x: 0, y: 0}
 --- !u!1 &4943414227444233295
 GameObject:
   m_ObjectHideFlags: 0

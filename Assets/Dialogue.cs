@@ -1,56 +1,63 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.Rendering.Universal.Internal;
 
 public class Dialogue : MonoBehaviour
 {
-
+    public static Dialogue Instance;
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI dialogueText;
-    public string Name;
     [TextArea(3, 10)]
+    public string[] SpeakerName;
     public string[] dialogue;
     public float textSpeed;
-
     private int index;
-
-    // Start is called before the first frame update
-    void Start()
+    public Vector2 cameraCenter;
+    private void Start()
     {
-        nameText.text = Name;
-        dialogueText.text = string.Empty;
-        StartDialogue();
+        Instance = this;
+        gameObject.SetActive(false);
     }
-
-    // Update is called once per frame
-    void Update()
+    public static void Reset(string[] names, string[] dialogue, Vector2 camera)
     {
+        Instance.gameObject.SetActive(true);
+        Instance.index = 0;
+        Instance.SpeakerName = names;
+        Instance.dialogue = dialogue;
+        Instance.nameText.text = names[0];
+        Instance.dialogueText.text = string.Empty;
+        Instance.cameraCenter = camera;
+        Instance.StartDialogue();
+    }
+    private void Update()
+    {
+        Instance = this;
         if(gameObject.activeSelf)
         {
+            Debug.Log(.05f * Time.unscaledDeltaTime * 100f);
+            Camera.main.transform.position = Camera.main.transform.position.Lerp(new Vector3(cameraCenter.x, cameraCenter.y, Camera.main.transform.position.z), 0.05f * Time.unscaledDeltaTime * 100f);
             Time.timeScale = 0f;
-        }
-        if(Input.GetMouseButtonDown(0))
-        {
-            if(dialogueText.text == dialogue[index])
+            if (Input.GetMouseButtonDown(0))
             {
-                NextLine();
-            }
-            else
-            {
-                StopAllCoroutines();
-                dialogueText.text = dialogue[index];
+                if (dialogueText.text == dialogue[index])
+                {
+                    NextLine();
+                }
+                else
+                {
+                    StopAllCoroutines();
+                    dialogueText.text = dialogue[index];
+                }
             }
         }
     }
-
-    void StartDialogue()
+    private void StartDialogue()
     {
         index = 0;
         StartCoroutine(TypeLine());
     }
-
-    IEnumerator TypeLine()
+    private IEnumerator TypeLine()
     {
         foreach(char c in dialogue[index].ToCharArray())
         {
@@ -58,12 +65,12 @@ public class Dialogue : MonoBehaviour
             yield return new WaitForSecondsRealtime(textSpeed);
         }
     }
-
-    void NextLine()
+    private void NextLine()
     {
         if(index < dialogue.Length -1)
         {
             index++;
+            nameText.text = SpeakerName[index];
             dialogueText.text = string.Empty;
             StartCoroutine(TypeLine());
         }
