@@ -182,7 +182,8 @@ public class CatClawSlash : Projectile
     public override void Init()
     {
         transform.localScale *= 2f;
-        cmp.c2D.offset = new Vector2(0, 0);
+        cmp.c2D.offset = new Vector2(-0.3f, 0);
+        cmp.c2D.radius = .6f;
         cmp.spriteRenderer.sprite = null;
         cmp.spriteRenderer.color = new Color(1, 1, 1, 0.1f);
         Friendly = true;
@@ -199,6 +200,7 @@ public class CatClawSlash : Projectile
             float lifeTime = i == 0 ? 0.21f : 0.19f;
             ParticleManager.NewParticle((Vector2)transform.position - (dir * speed * lifeTime / 2.4f) + tilt * i * 0.29f, size, dir * speed + RB.velocity, 0, lifeTime, 2);
         }
+        AudioManager.PlaySound(SoundID.Blade, transform.position, 0.7f, Utils.RandFloat(0.6f, 0.9f));
         AI();
     }
     public override void AI()

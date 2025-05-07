@@ -52,7 +52,7 @@ public class CheeseSpider : MonoBehaviour
             velo += targetVelocity * inertia;
             velo.x *= 1 - inertia;
         }
-        if (Player.Control.Up && TouchingGround && (touchingGroundForFrames > 25 || !Player.PrevControl.Up))
+        if ((Player.Control.Up || Player.Control.Jump) && TouchingGround && (touchingGroundForFrames > 25 || !Player.PrevControl.Up))
         {
             velo.y *= 0.1f;
             velo.y += jumpForce;

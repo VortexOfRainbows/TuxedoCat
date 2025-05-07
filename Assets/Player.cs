@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
@@ -7,20 +8,24 @@ public struct Control
 {
     public bool SwapItem;
     public bool MouseLeft, MouseRight;
+    public bool Jump;
     public bool Up, Down, Left, Right;
     public bool Num1, Num2, Num3, Num4;
+    public bool E;
     public float MouseWheel;
     public Control(bool defaultState = false)
     {
         SwapItem = MouseLeft = MouseRight = Up = Down = Left = Right = defaultState;
-        Num1 = Num2 = Num3 = Num4 = false;
+        Num1 = Num2 = Num3 = Num4 = Jump = false;
+        E = false;
         MouseWheel = 0;
     }
     public void Update()
     {
+        E = UpdateKey(Input.GetKey(KeyCode.E));
         Up = UpdateKey(Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Space), Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow));
         Down = UpdateKey(Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow), 
-          Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow));
+          Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Space));
         Left = UpdateKey(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow), 
           Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow));
         Right = UpdateKey(Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow), 
@@ -28,6 +33,7 @@ public struct Control
         MouseLeft = UpdateKey(Input.GetMouseButton(0));
         MouseRight = UpdateKey(Input.GetMouseButton(1));
         SwapItem = UpdateKey(Input.GetKey(KeyCode.Tab));
+        Jump = UpdateKey(Input.GetKey(KeyCode.Space));
 
         Num1 = UpdateKey(Input.GetKey(KeyCode.Alpha1));
         Num2 = UpdateKey(Input.GetKey(KeyCode.Alpha2));
@@ -42,6 +48,7 @@ public struct Control
 }
 public class Player : MonoBehaviour
 {
+    public static bool InSaveAnimation = false;
     public float hurtTimer = 0;
     public float DelayCameraMovement = 0f;
     private Color color = Color.white;
@@ -96,6 +103,9 @@ public class Player : MonoBehaviour
     public GameObject CheeseSpiderPrefab;
     public bool wasClimbingUpward = false;
     public GameObject ClimbCollider;
+    public int wallJumpTimer = 0;
+    public int wallJumpGraceFrames = 0;
+    public Collider2D SolidCollider;
     public void Start()
     {
         Instance = this;
@@ -106,6 +116,15 @@ public class Player : MonoBehaviour
     }
     public void MovementUpdate()
     {
+        SolidCollider.enabled = !InSaveAnimation;
+        if (!InSaveAnimation)
+        {
+            transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, 0.14f);
+            if (transform.localScale.x > 0.99f)
+                transform.localScale = Vector3.one;
+        }
+        else
+            LaserPtr.SetActive(false);
         ClimbCollider.SetActive(ItemType == 2);
         if (IsUsingItem) {
             if (anim.Climbing)
@@ -114,8 +133,25 @@ public class Player : MonoBehaviour
         }
         Vector2 velo = RB.velocity;
         Vector2 targetVelocity = Vector2.zero;
-        float topSpeed = TouchingGround ? 5 : 10;
-        float inertia = TouchingGround ? 0.05f : 0.0225f;
+        float topSpeed = TouchingGround ? 5 : (wallJumpTimer > 0 ? 5 : 10);
+        float inertia = TouchingGround ? 0.05f : (wallJumpTimer > 0 ? 0.0025f : 0.0225f);
+        bool midWallJump = wallJumpTimer > 0;
+        if (midWallJump || anim.Climbing || wallJumpGraceFrames >= 0)
+        {
+            if(midWallJump)
+            {
+                float percent = wallJumpTimer / 50f;
+                percent *= percent;
+                velo.x *= 0.99f;
+                velo.x -= anim.ClimbDir * 0.3f * percent;
+                velo.y += 0.05f * percent;
+            }
+            wallJumpTimer--;
+        }
+        else if(wallJumpTimer < 0)
+        {
+            wallJumpTimer++;
+        }
         float jumpForce = 11f;
 
         if (anim.Climbing)
@@ -127,11 +163,12 @@ public class Player : MonoBehaviour
         }
         else
         {
-            if (Mathf.Abs(RB.velocity.x) > 0.1f)
+            if (Mathf.Abs(RB.velocity.x) > 0.1f && !midWallJump)
                 Dir = Mathf.Sign(RB.velocity.x);
-            RB.gravityScale = 1f;
+            if(Grapple == null && !InSaveAnimation)
+                RB.gravityScale = 1f;
         }
-        if (!CheeseSpider.Active)
+        if (!CheeseSpider.Active && !InSaveAnimation)
         {
             if (Control.Left) {
                 targetVelocity.x -= topSpeed;
@@ -143,7 +180,10 @@ public class Player : MonoBehaviour
                         wasClimbingUpward = true;
                     }
                     else
+                    {
                         wasClimbingUpward = false;
+                        wallJumpGraceFrames = 15;
+                    }
                 }
             }
             if (Control.Right) {
@@ -156,7 +196,10 @@ public class Player : MonoBehaviour
                         wasClimbingUpward = true;
                     }
                     else
+                    {
                         wasClimbingUpward = false;
+                        wallJumpGraceFrames = 15;
+                    }
                 }
             }
             if(Control.Up && targetVelocity.y == 0 && anim.Climbing)
@@ -185,23 +228,42 @@ public class Player : MonoBehaviour
         }
 
 
-        if (!CheeseSpider.Active)
+        if (!CheeseSpider.Active && !InSaveAnimation)
         {
             bool fakeJump = false;
-            if(anim.prevClimbing && !anim.Climbing && wasClimbingUpward)
-                fakeJump = true;
-            if(anim.Climbing)
+            float jumpMult = 1.0f;
+            if(anim.prevClimbing && !anim.Climbing && wasClimbingUpward && UseAnimation <= 0)
             {
+                jumpMult = 0.55f;
+                fakeJump = true;
+            }
+            if (anim.Climbing)
+            {
+                velo.x *= 0.95f;
                 TouchingGround = false;
             }
-            if ((Control.Up && TouchingGround) || fakeJump)
+            if ((anim.Climbing || wallJumpGraceFrames >= 0) && Control.Jump && wallJumpTimer <= -12)
+            {
+                TouchingGround = true;
+                fakeJump = true;
+                jumpMult = 0.875f;
+            }
+            if (((Control.Up || Control.Jump) && TouchingGround) || fakeJump)
             {
                 velo.y *= 0.1f;
-                velo.y += (fakeJump ? 0.55f : 1) * jumpForce;
+                velo.y += jumpMult * jumpForce;
+                if(anim.Climbing)
+                {
+                    wallJumpTimer = 50;
+                    velo.x -= anim.ClimbDir * 3.75f;
+                    RB.position += velo * 0.01f;
+                    anim.Climbing = false;
+                }
                 TouchingGround = false;
             }
         }
-        if(!anim.prevClimbing && !anim.Climbing)
+        wallJumpGraceFrames--;
+        if (!anim.prevClimbing && !anim.Climbing)
         {
             wasClimbingUpward = false;
         }
@@ -225,6 +287,10 @@ public class Player : MonoBehaviour
         if(life < 1)
         {
             life = 1; //For now, stay at one life since we dont have death support
+        }
+        if(wallJumpTimer > 0)
+        {
+            Dir = -anim.ClimbDir;
         }
         anim.Animate();
         anim.prevTouchingGround = TouchingGround;
@@ -264,7 +330,7 @@ public class Player : MonoBehaviour
     public float ItemSwapDelay = 0;
     public void ItemUpdate()
     {
-        if (!IsUsingItem || (ItemType == 3 && !CheeseSpider.Active))
+        if ((!IsUsingItem || (ItemType == 3 && !CheeseSpider.Active)))
         {
             int prevType = ItemType;
             if(ItemSwapDelay <= 0)
@@ -290,10 +356,20 @@ public class Player : MonoBehaviour
                 ItemType = 1;
             else if (Control.Num3)
                 ItemType = 2;
-            else if (Control.Num4)
+            else if (Control.Num4 && !InSaveAnimation)
                 ItemType = 3;
             if(prevType != ItemType)
                 UseAnimation = 0;
+        }
+        if (!IsUsingItem && InSaveAnimation)
+        {
+            if (ItemType == 3)
+            {
+                UseAnimation = 0;
+                ItemType = 2;
+            }
+            else
+                return;
         }
         if (ItemType == 0)
         {
