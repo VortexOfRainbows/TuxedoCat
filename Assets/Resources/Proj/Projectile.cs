@@ -200,6 +200,7 @@ public class CatClawSlash : Projectile
             float lifeTime = i == 0 ? 0.21f : 0.19f;
             ParticleManager.NewParticle((Vector2)transform.position - (dir * speed * lifeTime / 2.4f) + tilt * i * 0.29f, size, dir * speed + RB.velocity, 0, lifeTime, 2);
         }
+        AudioManager.PlaySound(SoundID.Blade, transform.position, 0.7f, Utils.RandFloat(0.6f, 0.9f));
         AI();
     }
     public override void AI()

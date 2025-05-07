@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public static class SoundID
 {
-    //public static SoundClip FlipSide = new("Flip");
+    public static SoundClip Blade = new("Blade1", "Blade2", "Blade3");
 }
 public class SoundClip
 {
