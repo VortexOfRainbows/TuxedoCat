@@ -1,9 +1,5 @@
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
-using UnityEngine.UI;
-
 public struct Control
 {
     public bool SwapItem;
@@ -48,6 +44,7 @@ public struct Control
 }
 public class Player : MonoBehaviour
 {
+    public static SaveBox LastUsedSaveBox;
     public static bool InSaveAnimation = false;
     public float hurtTimer = 0;
     public float DelayCameraMovement = 0f;
