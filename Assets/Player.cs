@@ -44,7 +44,7 @@ public struct Control
 }
 public class Player : MonoBehaviour
 {
-    public static SaveBox LastUsedSaveBox;
+    public SaveBox LastUsedSaveBox;
     public static bool InSaveAnimation = false;
     public float hurtTimer = 0;
     public float DelayCameraMovement = 0f;
@@ -274,11 +274,14 @@ public class Player : MonoBehaviour
         ItemUpdate();
         if(life < 9)
         {
-            regen += Time.fixedDeltaTime;
-            if(regen > 5)
+            if(InSaveAnimation)
             {
-                life++;
-                regen = 0;
+                regen += Time.fixedDeltaTime;
+                if (regen > 1)
+                {
+                    life++;
+                    regen = 0;
+                }
             }
         }
         if(life < 1)
