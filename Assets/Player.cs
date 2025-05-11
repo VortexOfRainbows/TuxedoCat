@@ -45,6 +45,10 @@ public struct Control
 }
 public class Player : MonoBehaviour
 {
+    public static bool HasHook = false;
+    public static bool HasGun = false;
+    public static bool HasDrone = false;
+    public static bool HasClaw = false;
     public SaveBox LastUsedSaveBox;
     public static bool InSaveAnimation = false;
     public float hurtTimer = 0;
@@ -391,16 +395,22 @@ public class Player : MonoBehaviour
             {
                 ItemSwapDelay--;
             }
-            if (Control.Num1)
+            if (Control.Num1 && HasHook)
                 ItemType = 0;
-            else if (Control.Num2)
+            else if (Control.Num2 && HasGun)
                 ItemType = 1;
-            else if (Control.Num3)
+            else if (Control.Num3 && HasClaw)
                 ItemType = 2;
-            else if (Control.Num4 && !InSaveAnimation)
+            else if (Control.Num4 && !InSaveAnimation && HasDrone)
                 ItemType = 3;
             if(prevType != ItemType)
                 UseAnimation = 0;
+            if (ItemType == 1 && !HasGun)
+                ++ItemType;
+            if (ItemType == 2 && !HasClaw)
+                ++ItemType;
+            if (ItemType == 3 && !HasDrone)
+                ItemType = 0;
         }
         if (!IsUsingItem && (InSaveAnimation || Dead))
         {
@@ -412,7 +422,7 @@ public class Player : MonoBehaviour
             else
                 return;
         }
-        if (ItemType == 0)
+        if (ItemType == 0 && HasHook)
         {
             if (StartUsingItem && UseAnimation <= 0)
                 UseAnimation++;
@@ -473,7 +483,7 @@ public class Player : MonoBehaviour
             anim.ItemSprite.transform.localScale = Vector3.one * 0.7f;
             anim.ItemSprite.transform.localEulerAngles = new Vector3(0, 0, 0);
         }
-        if (ItemType == 1)
+        if (ItemType == 1 && HasGun)
         {
             anim.ItemSprite.sprite = Resources.Load<Sprite>("Items/LaserPointerGun");
             anim.ItemSprite.transform.localScale = Vector3.one;
@@ -536,7 +546,7 @@ public class Player : MonoBehaviour
         {
             LaserPtr.SetActive(false);
         }
-        if (ItemType == 3)
+        if (ItemType == 3 && HasDrone)
         {
             if (CheeseSpider.Instance == null)
             {
@@ -600,7 +610,7 @@ public class Player : MonoBehaviour
             if (CheeseSpider.Instance != null)
                 CheeseSpider.Instance.Kill();
         }
-        if(ItemType == 2)
+        if(ItemType == 2 && HasClaw)
         {
             anim.ItemSprite.sprite = anim.BackItemSprite.sprite = Resources.Load<Sprite>("Items/CatClaw");
             anim.ItemSprite.transform.localScale = anim.BackItemSprite.transform.localScale = Vector3.one;

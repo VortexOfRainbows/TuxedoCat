@@ -61,6 +61,10 @@ public class UIButtons : MonoBehaviour
                 image.transform.localScale = image.transform.localScale.Lerp(Vector3.one, 0.15f);
             }
         }
+        itemSlots[0].gameObject.SetActive(Player.HasHook);
+        itemSlots[1].gameObject.SetActive(Player.HasGun);
+        itemSlots[2].gameObject.SetActive(Player.HasClaw);
+        itemSlots[3].gameObject.SetActive(Player.HasDrone);
         //dyingDisclaimer.SetActive(Player.Instance.life <= 1);
     }
     public void Resume()
