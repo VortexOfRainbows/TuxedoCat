@@ -81,7 +81,7 @@ public class UIButtons : MonoBehaviour
     }
     public void QuitGame()
     {
-        Application.Quit();
+        Resume();
+        SceneManager.LoadScene(0);
     }
-
 }
