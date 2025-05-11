@@ -9,7 +9,7 @@ public class UIButtons : MonoBehaviour
 {
     public Image[] itemSlots;
     public GameObject[] lives;
-    public GameObject dyingDisclaimer;
+    //public GameObject dyingDisclaimer;
     public static bool gamePaused = false;
     public GameObject pauseMenuUI;
     public GameObject dimBG;
@@ -61,7 +61,7 @@ public class UIButtons : MonoBehaviour
                 image.transform.localScale = image.transform.localScale.Lerp(Vector3.one, 0.15f);
             }
         }
-        dyingDisclaimer.SetActive(Player.Instance.life <= 1);
+        //dyingDisclaimer.SetActive(Player.Instance.life <= 1);
     }
     public void Resume()
     {

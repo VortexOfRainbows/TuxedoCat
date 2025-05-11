@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Android;
 using UnityEngine.Tilemaps;
 public struct Control
 {
@@ -49,8 +50,12 @@ public class Player : MonoBehaviour
     public float hurtTimer = 0;
     public float DelayCameraMovement = 0f;
     private Color color = Color.white;
+    public float DeathAnimation = 0;
+    public bool Dead = false;
     public void Hurt(int damage = 1)
     {
+        if (InSaveAnimation)
+            return;
         hurtTimer = 10;
         regen = 0;
         life -= damage;
@@ -165,7 +170,7 @@ public class Player : MonoBehaviour
             if(Grapple == null && !InSaveAnimation)
                 RB.gravityScale = 1f;
         }
-        if (!CheeseSpider.Active && !InSaveAnimation)
+        if (!CheeseSpider.Active && !InSaveAnimation && !Dead)
         {
             if (Control.Left) {
                 targetVelocity.x -= topSpeed;
@@ -225,7 +230,7 @@ public class Player : MonoBehaviour
         }
 
 
-        if (!CheeseSpider.Active && !InSaveAnimation)
+        if (!CheeseSpider.Active && !InSaveAnimation && !Dead)
         {
             bool fakeJump = false;
             float jumpMult = 1.0f;
@@ -266,29 +271,59 @@ public class Player : MonoBehaviour
         }
         RB.velocity = velo;
     }
+    public void LifeUpdate()
+    {
+        if (life < 9)
+        {
+            if (InSaveAnimation)
+            {
+                regen += Time.fixedDeltaTime;
+                if (regen >= 0.5f)
+                {
+                    life++;
+                    regen -= 0.5f;
+                }
+            }
+        }
+        if (life <= 0)
+        {
+            Dead = true;
+        }
+        if(Dead)
+        {
+            DeathAnimation++;
+            float percent = Mathf.Min(DeathAnimation / 200f, 1);
+            anim.Visual.transform.localPosition = Utils.RandCircle(percent * 0.1f);
+            Main.SetVignetteIntensity(percent);
+            if(percent >= 1)
+            {
+                Dead = false;
+                life = 1;
+                transform.position = LastUsedSaveBox.transform.position;
+                Control.E = true;
+                LastUsedSaveBox.EnterSaveBox();
+                LastUsedSaveBox.Anim = 5;
+            }
+        }
+        else
+        {
+            if(DeathAnimation > 0)
+            {
+                float percent = Mathf.Max(DeathAnimation / 200f, 0);
+                DeathAnimation--;
+                Main.SetVignetteIntensity(percent);
+            }
+        }
+        DeathAnimation = Mathf.Clamp(DeathAnimation, 0, 200);
+    }
     public void FixedUpdate()
     {
         PrevControl = Control;
         Control.Update();
         MovementUpdate();
         ItemUpdate();
-        if(life < 9)
-        {
-            if(InSaveAnimation)
-            {
-                regen += Time.fixedDeltaTime;
-                if (regen > 1)
-                {
-                    life++;
-                    regen = 0;
-                }
-            }
-        }
-        if(life < 1)
-        {
-            life = 1; //For now, stay at one life since we dont have death support
-        }
-        if(wallJumpTimer > 0)
+        LifeUpdate();
+        if (wallJumpTimer > 0)
         {
             Dir = -anim.ClimbDir;
         }
@@ -330,7 +365,7 @@ public class Player : MonoBehaviour
     public float ItemSwapDelay = 0;
     public void ItemUpdate()
     {
-        if ((!IsUsingItem || (ItemType == 3 && !CheeseSpider.Active)))
+        if ((!IsUsingItem || (ItemType == 3 && !CheeseSpider.Active && !Dead)))
         {
             int prevType = ItemType;
             if(ItemSwapDelay <= 0)
@@ -361,7 +396,7 @@ public class Player : MonoBehaviour
             if(prevType != ItemType)
                 UseAnimation = 0;
         }
-        if (!IsUsingItem && InSaveAnimation)
+        if (!IsUsingItem && (InSaveAnimation || Dead))
         {
             if (ItemType == 3)
             {

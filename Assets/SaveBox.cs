@@ -44,6 +44,13 @@ public class SaveBox : MonoBehaviour
                 sr.sortingOrder = order;
         }
     }
+    public void EnterSaveBox()
+    {
+        Anim = 120;
+        Player.Instance.RB.velocity += new Vector2(0, 5f);
+        Player.InSaveAnimation = true;
+        Player.Instance.LastUsedSaveBox = this;
+    }
     public void UpdateActive()
     {
         if (!PlayerNear && Anim <= 0)
@@ -55,11 +62,9 @@ public class SaveBox : MonoBehaviour
         }
         else if ((Player.Control.E && !Player.PrevControl.E && Anim == 0) || Anim > 0)
         {
-            if(!Player.InSaveAnimation)
+            if (!Player.InSaveAnimation)
             {
-                Anim = 120;
-                Player.Instance.RB.velocity += new Vector2(0, 5f);
-                Player.InSaveAnimation = true;
+                EnterSaveBox();
             }
             Player.Instance.RB.velocity *= 0.9825f;
             Player.Instance.RB.gravityScale = 0f;

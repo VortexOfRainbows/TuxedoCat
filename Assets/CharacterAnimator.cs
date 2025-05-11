@@ -60,7 +60,8 @@ public class CharacterAnimator : MonoBehaviour
         float squashImpact = 1 - veloDiff;
         float yScale = Mathf.Lerp(Visual.transform.localScale.y, Mathf.Clamp(squashImpact, RB.velocity.y <= 0.5f && TouchingGround ? 0.6f : 1, 1), squashImpact < 0.9f ? 0.3f : 0.05f);
         Visual.transform.localScale = new Vector3(Dir * (2 - yScale), yScale, 1);
-        Visual.transform.localPosition = new Vector3(0, Visual.transform.localScale.y - 1, 0);
+        if(!Player.Instance.Dead || Player.Instance.gameObject != gameObject)
+            Visual.transform.localPosition = new Vector3(0, Visual.transform.localScale.y - 1, 0);
         float targetR = (Grapple != null && Grapple.GetComponent<GrapplingHook>().Attached) ? RB.velocity.x * 2.25f : RB.velocity.x * -0.75f * Mathf.Sqrt(1 + 0.5f * MathF.Abs(RB.velocity.y)) * Mathf.Sign(RB.velocity.y + 0.1f);
         Visual.transform.localEulerAngles = new Vector3(0, 0, Mathf.LerpAngle(Visual.transform.localEulerAngles.z, targetR, 0.04f));
         float walkMotion = 4f / 32f;
