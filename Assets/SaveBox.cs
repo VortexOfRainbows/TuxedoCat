@@ -1,9 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SaveBox : MonoBehaviour
 {
+    public static float ActiveRadius => 3.5f;
     public GameObject Button;
     public GameObject Left;
     public GameObject Right;
@@ -13,7 +12,7 @@ public class SaveBox : MonoBehaviour
     public int Anim = 0;
     public void FixedUpdate()
     {
-        if ((Player.Instance.gameObject.transform.position - transform.position).magnitude < 4.5f)
+        if ((Player.Instance.gameObject.transform.position - transform.position).magnitude < ActiveRadius)
             PlayerNear = true;
         else
             PlayerNear = false;
