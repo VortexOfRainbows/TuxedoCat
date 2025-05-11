@@ -46,18 +46,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Triggered: 0
-  names:
-  - Worried Goon
-  - Worried Goon
-  - Worried Goon
-  - Apathetic Goon
-  dialogue:
-  - "She\u2019s growing up real fast. She\u2019s currently in her rebellious phase,
-    though."
-  - "Says she\u2019s sick of cheese and wants to go dairy free or something."
-  - "I keep tellin\u2019 her that she needs to follow in my footsteps, but she won\u2019t
-    listen.\r"
-  - "That's tough brother.\r"
+  DialogueParts:
+  - SpeakerIcon: {fileID: 0}
+    Name: Rat Friend
+    Text: "How\u2019s Little Brie doing? "
+    LeftSideSpeaker: 1
+  - SpeakerIcon: {fileID: 0}
+    Name: Rat Dad
+    Text: "She\u2019s growing up real fast."
+    LeftSideSpeaker: 0
+  - SpeakerIcon: {fileID: 0}
+    Name: Rat Dad
+    Text: "She\u2019s currently in her rebellious phase, though."
+    LeftSideSpeaker: 0
+  - SpeakerIcon: {fileID: 0}
+    Name: Rat Dad
+    Text: "Says she\u2019s sick of cheese and wants to go dairy free or something."
+    LeftSideSpeaker: 0
+  - SpeakerIcon: {fileID: 0}
+    Name: Rat Dad
+    Text: " I keep tellin\u2019 her that she needs to follow in my footsteps, but
+      she won\u2019t listen. "
+    LeftSideSpeaker: 0
+  - SpeakerIcon: {fileID: 0}
+    Name: Rat Friend
+    Text: "She\u2019ll come around, don\u2019t worry. Cheese is in our blood, after
+      all. "
+    LeftSideSpeaker: 1
 --- !u!61 &8604886035419058704
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -90,7 +105,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.40568304, y: 1.9777012}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -101,5 +116,5 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 10.026437, y: 11.243483}
   m_EdgeRadius: 0

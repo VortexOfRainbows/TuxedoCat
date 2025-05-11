@@ -338,8 +338,11 @@ public class Player : MonoBehaviour
         {
             if (DelayCameraMovement <= 0)
             {
-                Vector2 lerp = Vector2.Lerp(Camera.main.transform.position, Player.Position, 0.1f);
-                Camera.main.transform.position = new Vector3(lerp.x, lerp.y, -10);
+                if(!Dialogue.InDialogue)
+                {
+                    Vector2 lerp = Vector2.Lerp(Camera.main.transform.position, Player.Position, 0.1f);
+                    Camera.main.transform.position = new Vector3(lerp.x, lerp.y, -10);
+                }
             }
             else
             {

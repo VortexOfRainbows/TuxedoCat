@@ -5,6 +5,7 @@ using UnityEngine.Rendering.Universal;
 
 public class Main : MonoBehaviour
 {
+    public static bool Paused => UIButtons.gamePaused;
     public static Main Instance;
     public static ColorAdjustments ColorAdjustments => Instance.c;
     public static Vignette Vignette => Instance.v;
