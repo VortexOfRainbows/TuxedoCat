@@ -373,6 +373,30 @@ public class Player : MonoBehaviour
     public int UseCounter = 0;
     public float ItemTypeCounter = 0;
     public float ItemSwapDelay = 0;
+    public void AdjustItemType(int i)
+    {
+        ItemType += i;
+        if (ItemType < 0)
+            ItemType += 4;
+        ItemType %= 4;
+    }
+    public bool HasCorrectItem()
+    {
+        if (HasHook && ItemType == 0)
+            return true;
+        if (HasGun && ItemType == 1)
+            return true;
+        if (HasClaw && ItemType == 2)
+            return true;
+        if (HasDrone && ItemType == 3)
+            return true;
+        return !HasHook && !HasGun && !HasClaw && !HasDrone;
+    }
+    public void FindAppropriateItem(int dir)
+    {
+        while (!HasCorrectItem())
+            AdjustItemType(dir);
+    }
     public void ItemUpdate()
     {
         if ((!IsUsingItem || (ItemType == 3 && !CheeseSpider.Active && !Dead)))
@@ -383,10 +407,12 @@ public class Player : MonoBehaviour
                 ItemTypeCounter += Control.MouseWheel;
                 if (ItemTypeCounter >= 1 || ItemTypeCounter <= -1)
                 {
-                    ItemType -= (int)Mathf.Sign(ItemTypeCounter);
-                    if (ItemType < 0)
-                        ItemType += 4;
-                    ItemType %= 4;
+                    int dir = -(int)Mathf.Sign(ItemTypeCounter);
+                    AdjustItemType(dir);
+
+                    if(HasHook || HasGun || HasDrone || HasClaw)
+                        FindAppropriateItem(dir);
+
                     ItemTypeCounter = 0;
                     ItemSwapDelay = 5;
                 }
@@ -405,12 +431,6 @@ public class Player : MonoBehaviour
                 ItemType = 3;
             if(prevType != ItemType)
                 UseAnimation = 0;
-            if (ItemType == 1 && !HasGun)
-                ++ItemType;
-            if (ItemType == 2 && !HasClaw)
-                ++ItemType;
-            if (ItemType == 3 && !HasDrone)
-                ItemType = 0;
         }
         if (!IsUsingItem && (InSaveAnimation || Dead))
         {

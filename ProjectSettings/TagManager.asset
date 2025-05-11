@@ -10,6 +10,7 @@ TagManager:
   - Door
   - Spider
   - Dialogue
+  - Item
   layers:
   - Default
   - TransparentFX
@@ -23,7 +24,7 @@ TagManager:
   - Gore
   - Climbable
   - Dialogue
-  - 
+  - Pickups
   - 
   - 
   - 
@@ -46,4 +47,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: NoLight
+    uniqueID: 3166550797
     locked: 0
