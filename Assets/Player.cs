@@ -282,8 +282,11 @@ public class Player : MonoBehaviour
                 {
                     life++;
                     regen -= 0.5f;
+                    PopupText.NewPopupText(transform.position, new Vector2(0, 2) + Utils.RandCircle(1), new Color(0f, 1f, 0f), "+");
                 }
             }
+            else
+                regen = -1;
         }
         if (life <= 0)
         {

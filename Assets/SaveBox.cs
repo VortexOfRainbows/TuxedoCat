@@ -51,6 +51,35 @@ public class SaveBox : MonoBehaviour
         Player.InSaveAnimation = true;
         Player.Instance.LastUsedSaveBox = this;
     }
+    public static Color PastelGradient(float radians)
+    {
+        float newAi = radians;
+        double center = 210;
+        Vector2 circlePalette = new Vector2(1, 0).RotatedBy(newAi);
+        double width = 45 * circlePalette.y;
+        int red = (int)(center + width);
+        circlePalette = new Vector2(1, 0).RotatedBy(newAi + 120 * Mathf.Deg2Rad);
+        width = 45 * circlePalette.y;
+        int grn = (int)(center + width);
+        circlePalette = new Vector2(1, 0).RotatedBy(newAi + 240 * Mathf.Deg2Rad);
+        width = 45 * circlePalette.y;
+        int blu = (int)(center + width);
+        return new Color(red / 255f, grn / 255f, blu / 255f);
+    }
+    public void SaveAnimation()
+    {
+        float rand = Utils.RandFloat(Mathf.PI * 2);
+        for(int j = 0; j < 2; j++)
+        {
+            int c = 12 + j * 12;
+            for (int i = 0; i < c; ++i)
+            {
+                float r = Mathf.PI * i / 6f;
+                ParticleManager.NewParticle(transform.position, 1 - j * 0.5f, new Vector2(9 + j * 4 * Utils.RandFloat(-1, 1), 0).RotatedBy(rand + r), 0.45f + j, Utils.RandFloat(0.9f, 1.2f), 3, PastelGradient(r));
+            }
+        }
+        PopupText.NewPopupText(transform.position, new Vector3(0, 2, 0), new Color(1, 0.6f, 0.3f), "Saved!");
+    }
     public void UpdateActive()
     {
         if (!PlayerNear && Anim <= 0)
@@ -73,7 +102,13 @@ public class SaveBox : MonoBehaviour
             Vector2 targetPosition = new Vector2(Mathf.Lerp(Player.Instance.transform.position.x, transform.position.x, (1 - percent) * 0.2f + percent * 0.2f), transform.position.y + (Mathf.Sin(percent * Mathf.PI) * 2.4f + percent) * endPercent - 0.5f);
             Player.Instance.transform.position = Player.Instance.transform.position.Lerp(targetPosition, 0.1f + 0.25f * (1 - percent));
             if (Anim > 1)
+            {
+                if(Anim == 2 && Player.Instance.DeathAnimation <= 0)
+                {
+                    SaveAnimation();
+                }
                 Anim--;
+            }
             else if (Player.Control.Up || Player.Control.E)
             {
                 Player.Instance.RB.velocity += new Vector2(0, 11f);
