@@ -1,0 +1,127 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &144085212109669986
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2312934797856508337, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: DialogueParts.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2312934797856508337, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: DialogueParts.Array.data[0].Name
+      value: New Rat
+      objectReference: {fileID: 0}
+    - target: {fileID: 2312934797856508337, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: DialogueParts.Array.data[0].Text
+      value: Holy shit. Is that the guy?
+      objectReference: {fileID: 0}
+    - target: {fileID: 2312934797856508337, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: DialogueParts.Array.data[1].Name
+      value: Rat Intern
+      objectReference: {fileID: 0}
+    - target: {fileID: 2312934797856508337, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: DialogueParts.Array.data[1].Text
+      value: Yeah, I think that's the guy..?
+      objectReference: {fileID: 0}
+    - target: {fileID: 2312934797856508337, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: DialogueParts.Array.data[2].Name
+      value: New Rat
+      objectReference: {fileID: 0}
+    - target: {fileID: 2312934797856508337, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: DialogueParts.Array.data[2].Text
+      value: Gatsby? The cat we were told to capture?
+      objectReference: {fileID: 0}
+    - target: {fileID: 2312934797856508337, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: DialogueParts.Array.data[3].Name
+      value: Rat Intern
+      objectReference: {fileID: 0}
+    - target: {fileID: 2312934797856508337, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: DialogueParts.Array.data[3].Text
+      value: Yeah... pretty sure that's him...
+      objectReference: {fileID: 0}
+    - target: {fileID: 2312934797856508337, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: DialogueParts.Array.data[4].Name
+      value: New Rat
+      objectReference: {fileID: 0}
+    - target: {fileID: 2312934797856508337, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: DialogueParts.Array.data[4].Text
+      value: Uh... should we get him..?
+      objectReference: {fileID: 0}
+    - target: {fileID: 2312934797856508337, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: DialogueParts.Array.data[2].LeftSideSpeaker
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2312934797856508337, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: DialogueParts.Array.data[4].LeftSideSpeaker
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4832671354295543204, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: m_Size.x
+      value: 24.226807
+      objectReference: {fileID: 0}
+    - target: {fileID: 4832671354295543204, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: m_Size.y
+      value: 14.443425
+      objectReference: {fileID: 0}
+    - target: {fileID: 4832671354295543204, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: m_Offset.x
+      value: 2.6846504
+      objectReference: {fileID: 0}
+    - target: {fileID: 4832671354295543204, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: m_Offset.y
+      value: 3.5776734
+      objectReference: {fileID: 0}
+    - target: {fileID: 6910577534954158614, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -17.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 6910577534954158614, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 11.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 6910577534954158614, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6910577534954158614, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6910577534954158614, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6910577534954158614, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6910577534954158614, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6910577534954158614, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6910577534954158614, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6910577534954158614, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8941612141986494347, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}
+      propertyPath: m_Name
+      value: Dialogue2
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f69c609e33758854bbd0772ee18f78ba, type: 3}

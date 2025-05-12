@@ -1,10 +1,9 @@
-using System.Net.Mail;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering;
 
 public class Goon : MonoBehaviour
 {
     private bool dead = false;
+    public Vector2 startVelo = Vector2.zero;
     public void Die()
     {
         dead = true;
@@ -103,6 +102,11 @@ public class Goon : MonoBehaviour
     public int shootCounter = 0;
     public void FixedUpdate()
     {
+        if(startVelo != Vector2.zero)
+        {
+            RB.velocity = startVelo * 0.5f;
+            startVelo = Vector2.zero;
+        }
         if (dead)
             return;
         Vector3 targetPatrolPoint = transform.position;
