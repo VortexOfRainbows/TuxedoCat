@@ -1,15 +1,17 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.Tilemaps;
 
 public class Main : MonoBehaviour
 {
     public static bool Paused => UIButtons.gamePaused;
     public static Main Instance;
+    public static Tilemap World => Instance.WorldMap;
     public static ColorAdjustments ColorAdjustments => Instance.c;
     public static Vignette Vignette => Instance.v;
     public Volume Volume;
+    public Tilemap WorldMap;
     private Vignette v;
     private ColorAdjustments c;
     public void Start()

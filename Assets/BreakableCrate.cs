@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class BreakableCrate : MonoBehaviour
 {
@@ -29,6 +29,8 @@ public class BreakableCrate : MonoBehaviour
             g.GetComponent<Projectile>().Hostile = false;
             g.transform.localScale *= Utils.RandFloat(0.7f, 1.05f);
         }
+        if(Main.World != null)
+            Main.World.SetTile(Main.World.WorldToCell(transform.position), null);
         Destroy(gameObject);
     }
 }
