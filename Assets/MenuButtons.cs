@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,20 +8,21 @@ public class MenuButtons : MonoBehaviour
     {
         
     }
-
     // Update is called once per frame
     void Update()
     {
         
     }
-
     public void QuitGame()
     {
         Application.Quit();
     }
-
     public void StartGame()
     {
-        SceneManager.LoadScene("GameplayScene");
+        SceneManager.LoadScene(1);
+    }
+    public void StartGame2()
+    {
+        SceneManager.LoadScene(2);
     }
 }
