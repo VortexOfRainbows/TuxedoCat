@@ -241,7 +241,7 @@ public class Player : MonoBehaviour
             if(anim.prevClimbing && !anim.Climbing && wasClimbingUpward && UseAnimation <= 0)
             {
                 jumpMult = 0.55f;
-                fakeJump = !Control.Down;
+                fakeJump = !Control.Down && (Control.Left || Control.Right);
             }
             if (anim.Climbing)
             {
