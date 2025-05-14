@@ -6,7 +6,7 @@ public class CharacterAnimator : MonoBehaviour
     {
         if ((collision.CompareTag("World") || collision.CompareTag("Standable")))
         {
-            if (collision.gameObject.layer != 10)
+            if (collision.gameObject.layer != 10 && collision.gameObject.layer != 12)
             {
                 TouchingGround = true;
             }

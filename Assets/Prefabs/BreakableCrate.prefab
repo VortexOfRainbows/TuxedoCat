@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6912764441170002051}
   - component: {fileID: 853880703213085957}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: Right
   m_TagString: World
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7273903671524246546}
   - component: {fileID: 6833882970903500975}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: Crate
   m_TagString: World
   m_Icon: {fileID: 0}
@@ -184,7 +184,7 @@ GameObject:
   - component: {fileID: 1363938091788577973}
   - component: {fileID: 4565467156692329748}
   - component: {fileID: 6033267685126876472}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: BreakableCrate
   m_TagString: World
   m_Icon: {fileID: 0}
@@ -281,7 +281,7 @@ GameObject:
   m_Component:
   - component: {fileID: 610860256019061162}
   - component: {fileID: 8911775478093405203}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: Mid
   m_TagString: World
   m_Icon: {fileID: 0}
@@ -365,7 +365,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4718253718718971050}
   - component: {fileID: 6085635078203470069}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: Bot
   m_TagString: World
   m_Icon: {fileID: 0}
@@ -449,7 +449,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3344002357008661389}
   - component: {fileID: 8246945042814235013}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: Left
   m_TagString: World
   m_Icon: {fileID: 0}
@@ -533,7 +533,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2837415790565158299}
   - component: {fileID: 7781474405699206570}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: Top
   m_TagString: World
   m_Icon: {fileID: 0}

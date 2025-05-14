@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -10,6 +11,8 @@ public class Main : MonoBehaviour
     public static Tilemap World => Instance.WorldMap;
     public static ColorAdjustments ColorAdjustments => Instance.c;
     public static Vignette Vignette => Instance.v;
+    public GameObject TaiyakiUI;
+    public TextMeshProUGUI TaiyakiText;
     public Volume Volume;
     public Tilemap WorldMap;
     private Vignette v;
@@ -25,6 +28,8 @@ public class Main : MonoBehaviour
         Instance = this;
         v = Volume.profile.components[0] as Vignette;
         c = Volume.profile.components[1] as ColorAdjustments;
+        TaiyakiUI.SetActive(Player.TaiyakiCollected > 0);
+        TaiyakiText.text = $"{Player.TaiyakiCollected}/{Player.TaiyakiPossible}";
     }
     public static void SetVignetteIntensity(float i)
     {

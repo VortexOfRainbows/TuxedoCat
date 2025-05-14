@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Android;
 using UnityEngine.Tilemaps;
 public struct Control
 {
@@ -45,6 +44,8 @@ public struct Control
 }
 public class Player : MonoBehaviour
 {
+    public static int TaiyakiCollected = 0;
+    public static int TaiyakiPossible = 0;
     public static bool HasHook = false;
     public static bool HasGun = false;
     public static bool HasDrone = false;
@@ -114,6 +115,10 @@ public class Player : MonoBehaviour
     public Collider2D SolidCollider;
     public void Start()
     {
+        TaiyakiCollected = 0;
+        foreach (Pickup p in FindObjectsByType<Pickup>(FindObjectsSortMode.None))
+            if (p.ItemType == 4)
+                ++TaiyakiPossible;
         Instance = this;
     }
     public void Update()

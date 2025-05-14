@@ -39,12 +39,14 @@ public class Pickup : MonoBehaviour
         PickedUp = true;
         if (ItemType == 0)
             Player.HasHook = true;
-        if (ItemType == 1)
+        else if (ItemType == 1)
             Player.HasGun = true;
-        if (ItemType == 2)
+        else if (ItemType == 2)
             Player.HasClaw = true;
-        if (ItemType == 3)
+        else if (ItemType == 3)
             Player.HasDrone = true;
+        else
+            Player.TaiyakiCollected += 1;
         if(ItemType >= 0 && ItemType <= 3)
         {
             Player.Instance.ItemType = ItemType;
