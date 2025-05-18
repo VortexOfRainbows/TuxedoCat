@@ -142,10 +142,11 @@ public class Player : MonoBehaviour
                 anim.TouchingGround = false;
             anim.Climbing = false;
         }
+        bool grappleOut = Grapple != null && RB.gravityScale < 0.7f;
         Vector2 velo = RB.velocity;
         Vector2 targetVelocity = Vector2.zero;
-        float topSpeed = TouchingGround ? 5 : (wallJumpTimer > 0 ? 5 : 10);
-        float inertia = TouchingGround ? 0.05f : (wallJumpTimer > 0 ? 0.0025f : 0.0225f);
+        float topSpeed = TouchingGround ? 5 : (wallJumpTimer > 0 ? 6 : grappleOut ? 10f : 7f);
+        float inertia = TouchingGround ? 0.05f : (wallJumpTimer > 0 ? 0.0025f : grappleOut ? 0.023f : Mathf.Abs(velo.x) > topSpeed ? 0.0175f : 0.021f);
         bool midWallJump = wallJumpTimer > 0;
         if (midWallJump || anim.Climbing || wallJumpGraceFrames >= 0)
         {
