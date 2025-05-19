@@ -92,6 +92,7 @@ public class Laser : Projectile
         cmp.spriteRenderer.material = Resources.Load<Material>("Additive");
         Friendly = true;
         Hostile = false;
+        AudioManager.PlaySound(SoundID.Laser, transform.position, 1, Utils.RandFloat(1.2f, 1.4f));
     }
     public void SpawnParticles()
     {

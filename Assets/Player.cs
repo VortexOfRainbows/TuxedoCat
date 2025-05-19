@@ -598,7 +598,10 @@ public class Player : MonoBehaviour
                         //cast cheese spider
                         CheeseSpider.Instance.transform.SetParent(null);
                         CheeseSpider.Instance.IsActive = true;
-                        CheeseSpider.Instance.RB.velocity = toMouse.normalized * 10f + Vector2.up * 10;
+                        Vector2 toMouse2 = toMouse.normalized;
+                        if (toMouse2.y > 0)
+                            toMouse2.y *= 0.4f;
+                        CheeseSpider.Instance.RB.velocity = toMouse2 * 10f + Vector2.up * 10;
                         for(int i = 0; i < 15; ++i)
                             ParticleManager.NewParticle(CheeseSpider.Instance.transform.position, Utils.RandFloat(0.75f, 1.25f), CheeseSpider.Instance.RB.velocity * Utils.RandFloat(0.4f, 0.8f), 1.8f, Utils.RandFloat(0.7f, 1f) , 1);
                         UseAnimation = 0;
