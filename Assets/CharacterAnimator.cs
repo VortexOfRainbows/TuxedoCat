@@ -12,10 +12,11 @@ public class CharacterAnimator : MonoBehaviour
             }
         }
     }
-    public static readonly Vector2 ArmLeftPos = new Vector3(0.3125f, -0.125f, 0);
-    public static readonly Vector2 ArmRightPos = new Vector3(-0.3125f, -0.125f, 0);
-    public static readonly Vector2 LegLeftPos = new Vector3(-0.15625f, -0.65625f, 0);
-    public static readonly Vector2 LegRightPos = new Vector3(0.15625f, -0.65625f, 0);
+    public bool IsBiggieCheese = false;
+    public Vector2 ArmLeftPos => IsBiggieCheese ? new Vector3(-1.1875f, 0.125f, 0) : new Vector3(-0.3125f, -0.125f, 0);
+    public Vector2 ArmRightPos => IsBiggieCheese ? new Vector3(1.1875f, 0.0625f, 0) : new Vector3(0.3125f, -0.125f, 0);
+    public Vector2 LegLeftPos => IsBiggieCheese ? new Vector3(-0.40625f, -1.6875f, 0) : new Vector3(-0.15625f, -0.65625f, 0);
+    public Vector2 LegRightPos => IsBiggieCheese ? new Vector3(0.4675f, -1.6875f, 0) : new Vector3(0.15625f, -0.65625f, 0);
     public bool Climbing = false;
     public bool prevClimbing = false;
     public float ClimbDir = 1;
@@ -64,7 +65,7 @@ public class CharacterAnimator : MonoBehaviour
             Visual.transform.localPosition = new Vector3(0, Visual.transform.localScale.y - 1, 0);
         float targetR = (Grapple != null && Grapple.GetComponent<GrapplingHook>().Attached) ? RB.velocity.x * 2.25f : RB.velocity.x * -0.75f * Mathf.Sqrt(1 + 0.5f * MathF.Abs(RB.velocity.y)) * Mathf.Sign(RB.velocity.y + 0.1f);
         Visual.transform.localEulerAngles = new Vector3(0, 0, Mathf.LerpAngle(Visual.transform.localEulerAngles.z, targetR, 0.04f));
-        float walkMotion = 4f / 32f;
+        float walkMotion = IsBiggieCheese ? 0.25f : 0.125f;
         float walkDirection = 1f;
             //if (Entity.Velocity.y < -0.0 && MathF.Abs(Entity.Velocity.y) > 0.001f && MathF.Abs(Entity.Velocity.x) < 0.001f)
             //    walkDirection = -1;
@@ -101,7 +102,8 @@ public class CharacterAnimator : MonoBehaviour
             LegRight.transform.localPosition = LegRightPos + circularMotion + new Vector2(-2 / 32f, 0) * walkSpeedMultiplier;
             Head.transform.localPosition = new Vector3(0, Mathf.Sin(walkCounter * 2 + Mathf.PI) * 1f / 32f, 0);
             Body.transform.localPosition = new Vector3(0, Mathf.Sin(walkCounter * 2 + Mathf.PI / 2f) * 1f / 32f, 0);
-            float leftAngle = Mathf.Sin(walkCounter) * -15 * walkSpeedMultiplier;
+            float angle = IsBiggieCheese ? 5f : 15f;
+            float leftAngle = Mathf.Sin(walkCounter) * -angle * walkSpeedMultiplier;
             float rightAngle = -leftAngle;
             if (Grapple == null && armTargetPos == Vector2.zero)
                 ArmLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z, leftAngle, 0.07f);
