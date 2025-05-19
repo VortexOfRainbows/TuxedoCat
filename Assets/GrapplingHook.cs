@@ -16,7 +16,7 @@ public class GrapplingHook : MonoBehaviour
     public float targetLength = 0;
     public readonly float minDist = 1.0f;
     public float maxDist = 10;
-    public readonly float pixelsInRope = 6f;
+    public float pixelsInRope = 6f;
     private int PointCount = 25;
     private float timeAttached = 0;
     private float RetractDelay = 0;

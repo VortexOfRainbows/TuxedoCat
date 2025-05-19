@@ -3,6 +3,8 @@ using UnityEngine;
 public static class SoundID
 {
     public static SoundClip Blade = new("Blade1", "Blade2", "Blade3");
+    public static SoundClip Explosion = new("Explosion1", "Explosion2");
+    public static SoundClip Laser = new("Laser");
 }
 public class SoundClip
 {

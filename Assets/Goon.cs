@@ -30,6 +30,7 @@ public class Goon : MonoBehaviour
             g.GetComponent<Projectile>().Hostile = false;
             g.transform.localScale *= Utils.RandFloat(0.7f, 1.05f);
         }
+        AudioManager.PlaySound(SoundID.Explosion, transform.position, 1, 1);
         Destroy(gameObject);
     }
     public Color color = Color.white;
