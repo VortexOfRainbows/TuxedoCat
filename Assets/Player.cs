@@ -115,6 +115,10 @@ public class Player : MonoBehaviour
     public Collider2D SolidCollider;
     public void Start()
     {
+        HasHook = false;
+        HasGun = false;
+        HasDrone = false;
+        HasClaw = false;
         TaiyakiCollected = 0;
         foreach (Pickup p in FindObjectsByType<Pickup>(FindObjectsSortMode.None))
             if (p.ItemType == 4)
