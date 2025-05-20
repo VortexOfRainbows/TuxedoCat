@@ -61,7 +61,7 @@ public class Pickup : MonoBehaviour
     }
     public void OnTriggerStay2D(Collider2D collision)
     {
-        if(collision.gameObject.layer == 6 && !PickedUp) //Player layer
+        if((collision.gameObject.layer == 6 || (collision.gameObject.CompareTag("Spider") && ItemType >= 4)) && !PickedUp) //Player layer
         {
             Acquire();
         }

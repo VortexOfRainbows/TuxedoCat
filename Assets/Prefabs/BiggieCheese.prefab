@@ -1012,6 +1012,8 @@ MonoBehaviour:
   LegRight: {fileID: 8969395621909160439}
   ArmLeft: {fileID: 4180069773206499748}
   ArmRight: {fileID: 1826304451563928115}
+  HandLeft: {fileID: 3965247481900169871}
+  HandRight: {fileID: 1903519070216697172}
   ItemSprite: {fileID: 1680675936859650698}
   BackItemSprite: {fileID: 0}
   oldItemPos: {x: 0, y: 0}

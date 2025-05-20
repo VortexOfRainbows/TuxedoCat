@@ -511,7 +511,7 @@ Rigidbody2D:
   m_Material: {fileID: 6200000, guid: 7527d5079120ee54c9f393f24278906e, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 136
+    m_Bits: 4232
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 576
@@ -531,7 +531,7 @@ BoxCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 136
+    m_Bits: 4232
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 576
