@@ -119,7 +119,7 @@ public class Player : MonoBehaviour
         HasGun = false;
         HasDrone = false;
         HasClaw = false;
-        TaiyakiCollected = 0;
+        TaiyakiCollected = TaiyakiPossible = 0;
         foreach (Pickup p in FindObjectsByType<Pickup>(FindObjectsSortMode.None))
             if (p.ItemType == 4)
                 ++TaiyakiPossible;
@@ -295,7 +295,7 @@ public class Player : MonoBehaviour
                 if (regen >= 0.5f)
                 {
                     life++;
-                    regen -= 0.5f;
+                    regen -= 0.2f;
                     PopupText.NewPopupText(transform.position, new Vector2(0, 2) + Utils.RandCircle(1), new Color(0f, 1f, 0f), "+");
                 }
             }

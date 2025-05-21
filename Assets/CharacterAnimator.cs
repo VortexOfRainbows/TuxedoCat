@@ -13,6 +13,7 @@ public class CharacterAnimator : MonoBehaviour
         }
     }
     public bool IsBiggieCheese = false;
+    public bool TPose = false;
     public Vector2 ArmLeftPos => IsBiggieCheese ? new Vector3(-1.1875f, 0.125f, 0) : new Vector3(-0.3125f, -0.125f, 0);
     public Vector2 ArmRightPos => IsBiggieCheese ? new Vector3(1.1875f, 0.0625f, 0) : new Vector3(0.3125f, -0.125f, 0);
     public Vector2 LegLeftPos => IsBiggieCheese ? new Vector3(-0.40625f, -1.6875f, 0) : new Vector3(-0.15625f, -0.65625f, 0);
@@ -98,9 +99,9 @@ public class CharacterAnimator : MonoBehaviour
         if (inverse.y < 0)
             inverse.y *= 0.1f;
 
-        if (TouchingGround)
+        if (TouchingGround || TPose)
         {
-            float biggieCheeseModifier = IsBiggieCheese ? 55 : 0;
+            float biggieCheeseModifier = IsBiggieCheese ? TPose ? 0 : 55 : 0;
             LegLeft.transform.localPosition = LegLeftPos + inverse + new Vector2(2 / 32f, 0) * walkSpeedMultiplier;
             LegRight.transform.localPosition = LegRightPos + circularMotion + new Vector2(-2 / 32f, 0) * walkSpeedMultiplier;
             Head.transform.localPosition = new Vector3(0, Mathf.Sin(walkCounter * 2 + Mathf.PI) * 1f / 32f, 0);
@@ -119,8 +120,16 @@ public class CharacterAnimator : MonoBehaviour
             LegRight.transform.localEulerAngles = new Vector3(0, 0, rightAngle);
             if(IsBiggieCheese)
             {
-                HandLeft.transform.localEulerAngles = Mathf.LerpAngle(HandLeft.transform.localEulerAngles.z, 65, 0.05f) * Vector3.forward;
-                HandRight.transform.localEulerAngles = Mathf.LerpAngle(HandRight.transform.localEulerAngles.z, -65, 0.05f) * Vector3.forward;
+                if(TPose)
+                {
+                    HandLeft.transform.localEulerAngles = Mathf.LerpAngle(HandLeft.transform.localEulerAngles.z, 15, 0.05f) * Vector3.forward;
+                    HandRight.transform.localEulerAngles = Mathf.LerpAngle(HandRight.transform.localEulerAngles.z, -15, 0.05f) * Vector3.forward;
+                }
+                else
+                {
+                    HandLeft.transform.localEulerAngles = Mathf.LerpAngle(HandLeft.transform.localEulerAngles.z, 65, 0.05f) * Vector3.forward;
+                    HandRight.transform.localEulerAngles = Mathf.LerpAngle(HandRight.transform.localEulerAngles.z, -65, 0.05f) * Vector3.forward;
+                }
             }
         }
         else
@@ -131,10 +140,10 @@ public class CharacterAnimator : MonoBehaviour
             LegRight.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(LegRight.transform.localEulerAngles.z, -12f * jumpSpeedMultiplier, 0.05f);
             if(IsBiggieCheese)
             {
-                HandLeft.transform.localEulerAngles = Mathf.LerpAngle(HandLeft.transform.localEulerAngles.z, 45, 0.15f) * Vector3.forward;
-                HandRight.transform.localEulerAngles = Mathf.LerpAngle(HandRight.transform.localEulerAngles.z, -45, 0.15f) * Vector3.forward;
-                ArmLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z, 25 * jumpSpeedMultiplier, 0.05f);
-                ArmRight.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmRight.transform.localEulerAngles.z, -25 * jumpSpeedMultiplier, 0.05f);
+                HandLeft.transform.localEulerAngles = Mathf.LerpAngle(HandLeft.transform.localEulerAngles.z, -55, 0.15f) * Vector3.forward;
+                HandRight.transform.localEulerAngles = Mathf.LerpAngle(HandRight.transform.localEulerAngles.z, 55, 0.15f) * Vector3.forward;
+                ArmLeft.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmLeft.transform.localEulerAngles.z, -65, 0.05f);
+                ArmRight.transform.localEulerAngles = Vector3.forward * Mathf.LerpAngle(ArmRight.transform.localEulerAngles.z, 65, 0.05f);
             }
             else
             {

@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 public abstract class Projectile : MonoBehaviour
@@ -155,6 +156,10 @@ public class Cheese : Projectile
         Hostile = true;
         TileCollide = true;
         RB.gravityScale = 0.1f;
+        if (Data.Length > 0)
+        {
+            RB.gravityScale = -Data[0];
+        }
         AI();
         for (int i = 0; i < 15; ++i)
         {
@@ -229,6 +234,47 @@ public class CatClawSlash : Projectile
         {
             Vector2 circular = Utils.RandCircle(1.5f);
             ParticleManager.NewParticle((Vector2)target.transform.position + circular, 0.8f, -circular * 10f, 0.25f, 0.25f, 2);
+        }
+    }
+}
+public class CheeseWheel : Projectile
+{
+    public override void Init()
+    {
+        transform.localScale *= 0.1f;
+        cmp.c2D.radius *= 1.5f;
+        cmp.c2D.offset = new Vector2(0, 0);
+        cmp.spriteRenderer.sprite = Resources.Load<Sprite>("Proj/CheeseWheel");
+        Friendly = false;
+        Hostile = true;
+        TileCollide = true;
+        RB.gravityScale = 0.05f;
+        AI();
+        for (int i = 0; i < 15; ++i)
+        {
+            ParticleManager.NewParticle(transform.position, Utils.RandFloat(0.6f, 1.2f), RB.velocity * Utils.RandFloat(0.5f, 1.5f) + Vector2.up, 2f, Utils.RandFloat(0.7f, 1f), 1);
+        }
+    }
+    public override void AI()
+    {
+        transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * 0.9f, 0.05f);
+        RB.velocity *= 1.0065f;
+        RB.rotation = Mathf.Rad2Deg * RB.velocity.ToRotation();
+        cmp.spriteRenderer.flipY = RB.velocity.x < 0;
+        if (Utils.RandFloat() < 0.4f)
+        {
+            ParticleManager.NewParticle(transform.position, Utils.RandFloat(0.7f, 2f), (RB.velocity + Vector2.up) * Utils.RandFloat(0.5f), 1f, Utils.RandFloat(0.6f, 0.7f), 1);
+        }
+    }
+    public override void OnKill()
+    {
+        for (int i = -2; i <= 2; ++i)
+        {
+            Projectile.NewProjectile<Cheese>(transform.position + new Vector3(0f, 0.5f, 0f), new Vector2(0, 16 - Mathf.Abs(i) * 2).RotatedBy(i * 1.5f * Mathf.Deg2Rad) + RB.velocity * 0.1f, -1);
+        }
+        for (int i = 0; i < 25; ++i)
+        {
+            ParticleManager.NewParticle(transform.position, Utils.RandFloat(0.7f, 2f), RB.velocity * Utils.RandFloat(-0.25f, 0.9f) + Vector2.up, 3.5f, Utils.RandFloat(0.7f, 1.1f), 1);
         }
     }
 }
