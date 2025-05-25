@@ -48,6 +48,12 @@ public abstract class Projectile : MonoBehaviour
                 goon.Hurt(1);
                 OnHit(goon);
             }
+            else if(collision.TryGetComponent<BiggieCheese>(out BiggieCheese c) && Penetrate > 0)
+            {
+                --Penetrate;
+                c.Hurt(1);
+                OnHit(c);
+            }
         }
         if (collision.gameObject.layer == 6 && Hostile) //if it is a player
         {

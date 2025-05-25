@@ -4,13 +4,17 @@ public class Goon : MonoBehaviour
 {
     private bool dead = false;
     public Vector2 startVelo = Vector2.zero;
-    public void Die()
+    public virtual void Die()
     {
         dead = true;
         foreach (SpriteRenderer sr in gameObject.GetComponentsInChildren<SpriteRenderer>())
         {
-            if (sr != anim.ItemSprite)
+            if (sr != anim.ItemSprite && sr.gameObject.activeSelf) {
                 sr.color = Color.white;
+                sr.gameObject.transform.eulerAngles = new Vector3(0, 0, sr.gameObject.transform.localEulerAngles.z);
+                sr.gameObject.transform.localScale = new Vector3(1, 1, 1);
+                sr.gameObject.transform.position = new Vector3(sr.gameObject.transform.position.x, sr.gameObject.transform.position.y, 0);
+            }
         }
         anim.LegLeft.AddComponent<Gore>();
         anim.ArmRight.AddComponent<Gore>();

@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Linq;
 
 public class Dialogue : MonoBehaviour
 {
@@ -34,7 +35,13 @@ public class Dialogue : MonoBehaviour
         Instance.nameText.text = d[0].Name;
         Instance.dialogueText.text = string.Empty;
         Instance.cameraCenter = camera;
-        Instance.UpdateImages(0);
+        if(d.Length > 1)
+        {
+            Instance.UpdateImages(0);
+            Instance.UpdateImages(1);
+        }
+        else
+            Instance.UpdateImages(0, true);
         Instance.StartDialogue();
     }
     public void Update()
@@ -149,16 +156,25 @@ public class Dialogue : MonoBehaviour
         float ratioY = boxDimensions.rectTransform.rect.height / i.rectTransform.rect.height;
         i.transform.localScale = Vector3.one * Mathf.Min(ratioX, ratioY);
     }
-    public void UpdateImages(int index)
+    public void UpdateImages(int index, bool both = false)
     {
         Sprite nextSpeakerSprite = DialogueParts[index].SpeakerIcon;
         leftIsTalking = DialogueParts[index].LeftSideSpeaker;
         if (nextSpeakerSprite != null)
         {
-            if (leftIsTalking)
-                leftPortrait.sprite = nextSpeakerSprite;
+            if (!both)
+                both = DialogueParts[index].BothSideSpeaker;
+            if (both)
+            {
+                leftPortrait.sprite = rightPortrait.sprite = nextSpeakerSprite;
+            }
             else
-                rightPortrait.sprite = nextSpeakerSprite;
+            {
+                if (leftIsTalking)
+                    leftPortrait.sprite = nextSpeakerSprite;
+                else
+                    rightPortrait.sprite = nextSpeakerSprite;
+            }
         }
         UpdateImage(leftPortrait);
         UpdateImage(rightPortrait);

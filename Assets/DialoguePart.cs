@@ -9,5 +9,6 @@ public class DialoguePart
     [TextArea(3, 10)]
     public string Text = "Something I am talking about";
     public bool LeftSideSpeaker;
+    public bool BothSideSpeaker = false;
     public bool RightSideSpeaker => !LeftSideSpeaker;
 }

@@ -1032,7 +1032,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5949449404841279211}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -1082,10 +1082,10 @@ BoxCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 264
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 8183
+    m_Bits: 7927
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -1128,6 +1128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsBiggieCheese: 1
+  TPose: 0
   Climbing: 0
   prevClimbing: 0
   ClimbDir: 1
@@ -1173,8 +1174,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2d0f76f677807c4985356546bd67e19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startVelo: {x: 0, y: 0}
+  color: {r: 1, g: 1, b: 1, a: 1}
+  target: {fileID: 0}
+  Alertness: 0
+  life: 7
+  hurtTimer: 0
   anim: {fileID: 8845809780284446305}
+  shootCounter: 0
   FightInitiated: 0
+  startPos: {x: 0, y: 0, z: 0}
   AiCounter: 0
   AiPhase: 0
   CheeseWheel: {fileID: 1885918595211473396}

@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public class Main : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class Main : MonoBehaviour
     public Tilemap WorldMap;
     private Vignette v;
     private ColorAdjustments c;
+    public Image CheeseBarImage;
+    public GameObject CheeseBarParent;
     public void Start()
     {
         Instance = this;
@@ -30,6 +33,17 @@ public class Main : MonoBehaviour
         c = Volume.profile.components[1] as ColorAdjustments;
         TaiyakiUI.SetActive(Player.TaiyakiCollected > 0);
         TaiyakiText.text = $"{Player.TaiyakiCollected}/{Player.TaiyakiPossible}";
+    }
+    public void FixedUpdate()
+    {
+        if(BiggieCheese.FightInitiated)
+        {
+            CheeseBarParent.transform.localPosition = CheeseBarParent.transform.localPosition.Lerp(Vector3.up * 540, 0.05f);
+        }
+        else
+        {
+            CheeseBarParent.transform.localPosition = CheeseBarParent.transform.localPosition.Lerp(Vector3.up * 740, 0.05f);
+        }
     }
     public static void SetVignetteIntensity(float i)
     {
