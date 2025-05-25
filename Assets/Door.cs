@@ -6,13 +6,14 @@ public class Door : MonoBehaviour
     public bool Open = false;
     public DoorButton[] Button;
     public SpriteRenderer[] Light;
+    public bool BossDoor = false;   
     private void Start()
     {
 
     }
     private void FixedUpdate()
     {
-        Open = CheckOpen();
+        Open = BossDoor ? !BiggieCheese.FightInitiated : CheckOpen();
         if(Open)
         {
             Gate.transform.localPosition = Gate.transform.localPosition.Lerp(new Vector3(0, 1.5f, 0), 0.025f);
@@ -24,11 +25,21 @@ public class Door : MonoBehaviour
             if(Gate.transform.localPosition.y > -1.5f)
                 Gate.transform.localPosition -= new Vector3(0, 0.01f);
         }
-        for (int i = 0; i < Button.Length; ++i)
-            if (Button[i].Toggled)
-                TurnOnLight(i);
+        if(!BossDoor)
+        {
+            for (int i = 0; i < Button.Length; ++i)
+                if (Button[i].Toggled)
+                    TurnOnLight(i);
+                else
+                    TurnOffLight(i);
+        }
+        else
+        {
+            if(!Open)
+                TurnOnLight(0);
             else
-                TurnOffLight(i);
+                TurnOffLight(0);
+        }
     }
     private void TurnOnLight(int i)
     {

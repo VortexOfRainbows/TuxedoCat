@@ -382,6 +382,48 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Door_13
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 196
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5ff34594fcd462469236cd310b5bb79
+      internalID: 866700296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Door_14
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 166
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 294a7639137710642abe25c3f27ca5bc
+      internalID: 814441782
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -398,6 +440,8 @@ TextureImporter:
       Door_10: -2086800068
       Door_11: -615369647
       Door_12: -140134701
+      Door_13: 866700296
+      Door_14: 814441782
       Door_2: -1248958919
       Door_3: -1087061516
       Door_4: 1099201905
