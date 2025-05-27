@@ -175,6 +175,10 @@ public class Dialogue : MonoBehaviour
                 else
                     rightPortrait.sprite = nextSpeakerSprite;
             }
+            if (DialogueParts[index].LeftSpeakerIcon != null)
+                leftPortrait.sprite = DialogueParts[index].LeftSpeakerIcon;
+            if (DialogueParts[index].RightSpeakerIcon != null)
+                rightPortrait.sprite = DialogueParts[index].RightSpeakerIcon;
         }
         UpdateImage(leftPortrait);
         UpdateImage(rightPortrait);
