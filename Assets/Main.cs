@@ -20,6 +20,9 @@ public class Main : MonoBehaviour
     private ColorAdjustments c;
     public Image CheeseBarImage;
     public GameObject CheeseBarParent;
+    public AudioSource MusicSource;
+    private bool PrevFightInit = false;
+    private float MusicSwitchTimer = 0;
     public void Start()
     {
         Instance = this;
@@ -36,13 +39,48 @@ public class Main : MonoBehaviour
     }
     public void FixedUpdate()
     {
-        if(BiggieCheese.FightInitiated)
+        if (PrevFightInit == BiggieCheese.FightInitiated)
+        {
+            MusicSwitchTimer += Time.fixedDeltaTime * 0.5f;
+            MusicSource.volume = Mathf.Min(MusicSwitchTimer, 1);
+        }
+        else if(MusicSwitchTimer >= 1)
+        {
+            MusicSwitchTimer = 0;
+        }
+        if (BiggieCheese.FightInitiated)
         {
             CheeseBarParent.transform.localPosition = CheeseBarParent.transform.localPosition.Lerp(Vector3.up * 540, 0.05f);
+            if(PrevFightInit != BiggieCheese.FightInitiated)
+            {
+                MusicSwitchTimer += Time.fixedDeltaTime * 0.5f;
+                MusicSource.volume = Mathf.Max(1 - MusicSwitchTimer, 0);
+                if (MusicSwitchTimer > 1)
+                {
+                    MusicSource.Stop();
+                    MusicSource.clip = Resources.Load<AudioClip>("Audio/BossFight");
+                    MusicSource.Play();
+                    PrevFightInit = BiggieCheese.FightInitiated;
+                    MusicSwitchTimer = 0;
+                }
+            }
         }
         else
         {
             CheeseBarParent.transform.localPosition = CheeseBarParent.transform.localPosition.Lerp(Vector3.up * 740, 0.05f);
+            if (PrevFightInit != BiggieCheese.FightInitiated)
+            {
+                MusicSwitchTimer += Time.fixedDeltaTime * 0.5f;
+                MusicSource.volume = Mathf.Max(1 - MusicSwitchTimer, 0);
+                if (MusicSwitchTimer > 1)
+                {
+                    MusicSource.Stop();
+                    MusicSource.clip = Resources.Load<AudioClip>("Audio/SuspensefulInvestigation");
+                    MusicSource.Play();
+                    PrevFightInit = BiggieCheese.FightInitiated;
+                    MusicSwitchTimer = 0;
+                }
+            }
         }
     }
     public static void SetVignetteIntensity(float i)
