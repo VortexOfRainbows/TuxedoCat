@@ -9,11 +9,6 @@ using UnityEngine.UI;
 public class Main : MonoBehaviour
 {
     public static float MasterVolume = 1;
-    public GameObject GameEndMenu;
-    public void EndGame()
-    {
-        GameEndMenu.SetActive(true);
-    }
     public TextMeshProUGUI VolumePercentText;
     public AudioMixer Mixer;
     public Slider AudioSlider;
