@@ -42,11 +42,18 @@ public abstract class Projectile : MonoBehaviour
         if(collision.gameObject.layer == 7 && Friendly) //if it is an enemy
         {
             Goon goon = collision.gameObject.GetComponent<Goon>();
-            if(goon != null && Penetrate > 0)
+            if(goon != null && Penetrate > 0 )
             {
-                --Penetrate;
-                goon.Hurt(1);
-                OnHit(goon);
+                if(goon is Tutter tutter)
+                {
+                    tutter.FreeMe();
+                }
+                else
+                {
+                    --Penetrate;
+                    goon.Hurt(1);
+                    OnHit(goon);
+                }
             }
             else if(collision.TryGetComponent<BiggieCheese>(out BiggieCheese c) && Penetrate > 0)
             {

@@ -864,10 +864,10 @@ BoxCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -895,7 +895,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.6, y: 1.5}
+  m_Size: {x: 0.875, y: 1.5}
   m_EdgeRadius: 0
 --- !u!114 &5048326510410940397
 MonoBehaviour:
@@ -939,7 +939,7 @@ MonoBehaviour:
   RightArmTargetPos: {x: 0, y: 0}
   UseAnimation: 0
   TargetCursor: 0
-  TargetFront: 1
+  TargetFront: 0
   eyeTargetPosition: {x: 0, y: 0}
   useRecoil: 0
   ArmLerpSpeed: 0.1
@@ -964,6 +964,7 @@ MonoBehaviour:
   hurtTimer: 0
   anim: {fileID: 5048326510410940397}
   shootCounter: 0
+  TiedUp: 1
 --- !u!1 &8242277088716750345
 GameObject:
   m_ObjectHideFlags: 0
