@@ -55,7 +55,7 @@ public abstract class Projectile : MonoBehaviour
                     OnHit(goon);
                 }
             }
-            else if(collision.TryGetComponent<BiggieCheese>(out BiggieCheese c) && Penetrate > 0)
+            else if(collision.TryGetComponent<BiggieCheese>(out BiggieCheese c) && Penetrate > 0 && BiggieCheese.FightInitiated)
             {
                 --Penetrate;
                 c.Hurt(1);
