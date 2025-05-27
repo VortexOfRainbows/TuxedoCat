@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Tilemaps;
@@ -7,6 +8,22 @@ using UnityEngine.UI;
 
 public class Main : MonoBehaviour
 {
+    public static float MasterVolume = 1;
+    public TextMeshProUGUI VolumePercentText;
+    public AudioMixer Mixer;
+    public Slider AudioSlider;
+    public void SetVolume(float f)
+    {
+        if (f <= 0)
+            f = 0.00001f;
+        MasterVolume = f;
+        Mixer.SetFloat("masterVol", Mathf.Log10(f) * 20);
+        int p = (int)(f * 100);
+        string s = p == 0 ? "0" : p.ToString("###");
+        VolumePercentText.text = s + "%";
+
+        AudioSlider.SetValueWithoutNotify(f);
+    }
     public static bool Paused => UIButtons.gamePaused;
     public static Main Instance;
     public static Tilemap World => Instance.WorldMap;
@@ -23,14 +40,20 @@ public class Main : MonoBehaviour
     public AudioSource MusicSource;
     private bool PrevFightInit = false;
     private float MusicSwitchTimer = 0;
+    public bool IsMainMenu = false;
     public void Start()
     {
+        SetVolume(MasterVolume);
+        if (IsMainMenu)
+            return;
         Instance = this;
         v = Volume.profile.components[0] as Vignette;
         c = Volume.profile.components[1] as ColorAdjustments;
     }
     public void Update()
     {
+        if (IsMainMenu)
+            return;
         Instance = this;
         v = Volume.profile.components[0] as Vignette;
         c = Volume.profile.components[1] as ColorAdjustments;
@@ -39,6 +62,8 @@ public class Main : MonoBehaviour
     }
     public void FixedUpdate()
     {
+        if (IsMainMenu)
+            return;
         if (PrevFightInit == BiggieCheese.FightInitiated)
         {
             MusicSwitchTimer += Time.fixedDeltaTime * 0.5f;
