@@ -22,6 +22,7 @@ public class Dialogue : MonoBehaviour
     public float LoadInTime = 0;
     public bool leftIsTalking;
     public bool disengaging = false;
+    public bool endGameAtEnd = false;
     public void Start()
     {
         Instance = this;
@@ -115,6 +116,10 @@ public class Dialogue : MonoBehaviour
             LoadInTime = 0;
             InDialogue = false;
             gameObject.SetActive(false);
+            if(endGameAtEnd)
+            {
+                Main.Instance.EndGame();
+            }
         }
     }
     public void StartDialogue()
