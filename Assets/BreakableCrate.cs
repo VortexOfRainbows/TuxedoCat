@@ -15,6 +15,7 @@ public class BreakableCrate : MonoBehaviour
     }
     public void OnBreak()
     {
+        AudioManager.PlaySound(SoundID.Wood, transform.position, 0.5f, 1.0f);
         IsBroken = true;
         foreach(GameObject g in gores)
             g.AddComponent<Gore>();
