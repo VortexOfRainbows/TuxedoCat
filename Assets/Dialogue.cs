@@ -6,6 +6,8 @@ using System.Linq;
 
 public class Dialogue : MonoBehaviour
 {
+    public Transform TargetPosition;
+    public Transform HiddenPosition;
     public static bool InDialogue = false;
     public static Dialogue Instance;
     public TextMeshProUGUI nameText;
@@ -80,7 +82,7 @@ public class Dialogue : MonoBehaviour
         RectTransform r1 = GetComponent<RectTransform>();
         float percent = Mathf.Min(LoadInTime / AnimSpeed, 2);
         percent = Mathf.Sin(percent * Mathf.PI / 2f);
-        r1.position = Vector3.Lerp(new Vector3(r1.position.x, -180, r1.position.z), new Vector3(r1.position.x, -550, r1.position.z), Mathf.Max(1 - percent, 0));
+        r1.position = Vector3.Lerp(new Vector3(r1.position.x, TargetPosition.position.y, r1.position.z), new Vector3(r1.position.x, HiddenPosition.position.y, r1.position.z), Mathf.Max(1 - percent, 0));
         float lerpAmt = Time.unscaledDeltaTime / Time.fixedUnscaledDeltaTime * 0.1f;
         float topPos = 350;
         float botPos = 300;

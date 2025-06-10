@@ -46,6 +46,8 @@ public class Main : MonoBehaviour
     private bool PrevFightInit = false;
     private float MusicSwitchTimer = 0;
     public bool IsMainMenu = false;
+    public Transform BigCheeseBarTarget;
+    public Transform BigCheeseBarHidden;
     public void Start()
     {
         SetVolume(MasterVolume);
@@ -80,7 +82,7 @@ public class Main : MonoBehaviour
         }
         if (BiggieCheese.FightInitiated)
         {
-            CheeseBarParent.transform.localPosition = CheeseBarParent.transform.localPosition.Lerp(Vector3.up * 540, 0.05f);
+            CheeseBarParent.transform.position = CheeseBarParent.transform.position.Lerp(BigCheeseBarTarget.position, 0.05f);
             if(PrevFightInit != BiggieCheese.FightInitiated)
             {
                 MusicSwitchTimer += Time.fixedDeltaTime * 0.5f;
@@ -97,7 +99,7 @@ public class Main : MonoBehaviour
         }
         else
         {
-            CheeseBarParent.transform.localPosition = CheeseBarParent.transform.localPosition.Lerp(Vector3.up * 740, 0.05f);
+            CheeseBarParent.transform.position = CheeseBarParent.transform.position.Lerp(BigCheeseBarHidden.position, 0.05f);
             if (PrevFightInit != BiggieCheese.FightInitiated)
             {
                 MusicSwitchTimer += Time.fixedDeltaTime * 0.5f;
